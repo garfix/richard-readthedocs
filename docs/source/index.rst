@@ -13,19 +13,19 @@ how to :ref:`installation` the project.
 
    This project is under active development.
 
-Contents
+Contents 2
 --------
 
 .. toctree::
    :caption: Introduction
 
-   introduction/pipeline
-   introduction/choices
-   introduction/parsing
+   introduction/pipeline.md
+   introduction/choices.md
+   introduction/parsing.md
 
 .. toctree::
    :caption: Language
    :hidden:
 
-   language/names
+   language/names.md
 
