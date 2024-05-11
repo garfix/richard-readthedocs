@@ -17,6 +17,15 @@ Contents
 --------
 
 .. toctree::
+   :caption: Introduction
 
-   usage
-   api
+   introduction/pipeline
+   introduction/choices
+   introduction/parsing
+
+.. toctree::
+   :caption: Language
+   :hidden:
+
+   language/names
+
