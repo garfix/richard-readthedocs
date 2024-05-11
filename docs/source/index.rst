@@ -9,16 +9,11 @@ and offers a *simple* and *intuitive* API.
 Check out the :doc:`usage` section for further information, including
 how to :ref:`installation` the project.
 
-.. note::
-
-   This project is under active development.
-
-Contents 2
---------
-
 .. toctree::
+   :maxdepth: 2
    :caption: Introduction
 
+   abc.md
    introduction/pipeline.md
    introduction/choices.md
    introduction/parsing.md
