@@ -13,9 +13,6 @@ how to :ref:`installation` the project.
    :maxdepth: 2
    :caption: Introduction
 
-   abc.md
-   api
-   abc
    introduction/pipeline.md
    introduction/choices.md
    introduction/parsing.md
