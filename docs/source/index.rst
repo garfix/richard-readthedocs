@@ -7,10 +7,11 @@ This Python software library allows you to turn human language sentences into Py
    :maxdepth: 2
    :caption: Introduction
 
+   introduction/parsing.md
+   introduction/composition.md
    introduction/pipeline.md
    introduction/choices.md
-   introduction/parsing.md
-
+   
 .. toctree::
    :caption: Language
    :hidden:
