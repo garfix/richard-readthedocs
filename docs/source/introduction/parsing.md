@@ -48,7 +48,9 @@ if __name__ == '__main__':
 
 Something about the choice of the rewrite rules that form the grammar: these rules, like `vp -> verb np`, are not the only ones possible. Linguistic frameworks have multiple ways of decomposing a sentence. Read [Wikipedia on Grammar](https://en.wikipedia.org/wiki/Grammar) for more information. We'll be using a variant of [X-bar theory](https://en.wikipedia.org/wiki/X-bar_theory) as it suits the composition of semantics well. But other types of grammar may be used as well.
 
-You should see the following parse tree representation.
+You may be missing a lexicon in this example. A __lexicon__ is a collection of all the individual words of a language, together with their meanings. This library integrates the lexicon in the grammar to simplify the definition of idioms.
+
+When you run the script, you should see the following parse tree representation.
 
 ~~~
 s
@@ -65,4 +67,4 @@ s
             +- mary 'Mary'
 ~~~
 
-
+This library uses [Earley's parser](https://en.wikipedia.org/wiki/Earley_parser), which is fast and efficient, and doesn't fall into infinite recursion with left-recursive rules (i.e. `a -> a b`).
