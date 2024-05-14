@@ -82,4 +82,11 @@ if __name__ == '__main__':
     calculation_demo()
 ~~~
 
+Its results:
+
+    7
+
+    [14, 11]
+
+
 By default, the pipeline just returns the first successful alternative. In the second example we tell the request that we want to find all alternatives.
