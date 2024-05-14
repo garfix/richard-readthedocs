@@ -6,6 +6,8 @@ It was Richard Montague who first showed that lambda calculus can be used to com
 
 A grammar rule can be extended with a __semantic attachment__, expressed by the "sem" key, which expresses the meaning of the phrase covered by the rule. In this library the attachments take the form of a Python function.
 
+## Code structure
+
 Here's an example rule that demonstrates a typical 2-part structure of a semantic attachment ("sem"):
 
     { 
@@ -22,7 +24,9 @@ The parameter names are not required to be the same as the syntactic categories,
 
 The inner function `lambda: find(np(), vp_no_sub)` forms the real meaning of the rule. It uses the meanings of its child nodes that were made available through the parameters of the outer function.
 
-This example script takes a simple grammar to show how the meaning of the sentence: the result of the calculation, is formed by applying functions. The most basic meaning is formed by functions like `lambda: 1` that yield constants. These functions are passed as parameter to an operator functions like `lambda a, b: a() + b()`. They in turn are passed to term functions, which are recursive (`term -> term operator term`).
+## Example script
+
+The idea for the example script below was borrowed from another semantic parser [SEMPRE](https://github.com/percyliang/sempre/blob/master/TUTORIAL.md) (2014 -). It takes a simple grammar to show how the meaning of the sentence: the result of the calculation, is formed by applying functions. The most basic meaning is formed by functions like `lambda: 1` that yield constants. These functions are passed as parameter to an operator functions like `lambda a, b: a() + b()`. They in turn are passed to term functions, which are recursive (`term -> term operator term`).
 
 The semantic composition itself is performed by the __semantic composer__. It composes the meaning of the sentence into a single function. The __semantic executor__ simply executes this function.
 
@@ -36,10 +40,6 @@ from richard.processor.tokenizer.BasicTokenizer import BasicTokenizer
 
 
 def calculation_demo():
-    """
-    The example was taken from https://github.com/percyliang/sempre/blob/master/TUTORIAL.md
-    """
-
     grammar = [
         { "syn": "s -> 'what' 'is' term", "sem": lambda term: lambda: term() },
         { "syn": "s -> 'calculate' term", "sem": lambda term: lambda: term() },
