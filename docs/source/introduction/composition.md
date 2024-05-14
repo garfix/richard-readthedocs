@@ -2,11 +2,11 @@
 
 The meaning of a sentence or phrase can be composed of the meaning of its constituent phrases. Known as [Frege's principle](https://en.wikipedia.org/wiki/Principle_of_compositionality), this is the basis of deriving the meaning of a sentence.
 
-It was Richard Montague who first showed that lambda calculus can be used to compose the meaning of a phrase by using function application on the meanings of its children. This __Montague grammar__ is often used to compose compound predicate logic expressions which are declarative in nature. This library, however, uses the same principle to use executable code directly.
+It was Richard Montague who first showed that lambda calculus can be used to compose the meaning of a phrase by applying a function on the meanings of its child phrases. This __Montague grammar__ is often used to compose compound predicate logic expressions which are declarative in nature. This library, on the other hand, uses the same principle to create and run executable code.
 
-A grammar rule can be extended with a __semantic attachment__, which expresses the meaning of the phrase covered by the rule. In this library the attachments take the form of a Python function, or rather an _outer function_ that returns an _inner function_. It is the "sem" part of a rule.
+A grammar rule can be extended with a __semantic attachment__, expressed by the "sem" key, which expresses the meaning of the phrase covered by the rule. In this library the attachments take the form of a Python function.
 
-Here's an example of a typical 2-part structure of a semantic attachment:
+Here's an example rule that demonstrates a typical 2-part structure of a semantic attachment ("sem"):
 
     { 
         "syn": "s -> np vp_no_sub", 
@@ -14,15 +14,17 @@ Here's an example of a typical 2-part structure of a semantic attachment:
                     lambda: find(np(), vp_no_sub) 
     },
 
-The outer function `lambda np, vp_no_sub: ...` is needed to import the semantic functions of the child nodes. Each child node gets a parameter with the same name as the syntactic category it belongs to. In the example above, `np` is the first consequent of the rule, and is therefore the first parameter of the outer function. In the same way, `vp_no_sub` is the second consequent, and therefore the second parameter. Only categories need parameters. Words (like `'times'` or `'two'` have no need for a parameter, as they have no semantic attachment).
+Notice that "sem" is formed by a nested lambda function. It consists of an _outer function_ that returns an _inner function_. This is a general principle.
 
-The inner function `lambda: find(np(), vp_no_sub)` forms the real meaning of the rule. It makes use of the meanings of child nodes that were made available through the parameters of the outer function.
+The outer function `lambda np, vp_no_sub: ...` is just needed to import the semantic functions of the child nodes. Each child is appointed a parameter with the same name as the syntactic category it belongs to. In the example above, `np` is the first consequent of the rule, and `np` is therefore the name of the first parameter of the outer function. In the same way, `vp_no_sub` is the second consequent, and therefore the second parameter. Only categories need parameters. Words (like `'times'` or `'two'` have no need for a parameter, as they have no semantic attachment).
 
-This example script takes a simple grammar to show how the meaning of the sentence, the result of the calculation, is formed by applying functions. The most basic meaning is formed by functions like `lambda: 1` that yield constants. These functions are passed as parameter to operator functions like `lambda a, b: a() + b()`. They in turn are passed to term functions, which are recursive (`term -> term operator term`).
+The parameter names are not required to be the same as the syntactic categories, but it is good practice to keep them that way. An exception occurs when the rule has two of the same syntactic categories, as in `term -> term operator term`. In this case append a follow-up number, like `lambda term1, operator, term2`.
 
-The semantic composition is performed by the __semantic composer__. Its only task is to collect the semantic functions of child nodes, execute the outer function with these child node functions as arguments, to find the inner function. This inner function then serves as the semantic function to its parent node. This process is repeated hierarchically until the function of the complete sentence is found.
+The inner function `lambda: find(np(), vp_no_sub)` forms the real meaning of the rule. It uses the meanings of its child nodes that were made available through the parameters of the outer function.
 
-The __semantic executor__ simply runs the function of the complete sentence.
+This example script takes a simple grammar to show how the meaning of the sentence: the result of the calculation, is formed by applying functions. The most basic meaning is formed by functions like `lambda: 1` that yield constants. These functions are passed as parameter to an operator functions like `lambda a, b: a() + b()`. They in turn are passed to term functions, which are recursive (`term -> term operator term`).
+
+The semantic composition itself is performed by the __semantic composer__. It composes the meaning of the sentence into a single function. The __semantic executor__ simply executes this function.
 
 ~~~python
 from richard.Pipeline import Pipeline
