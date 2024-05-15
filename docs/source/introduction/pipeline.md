@@ -12,10 +12,12 @@ The pipeline in this library consists of __processors__, and these can be organi
 
 Each new input sentence is placed in an object, a `SentenceRequest`, and passed through all processors. Each processor takes the products of one or more previous processors, which are stored in this request, and stores its own product in the request as well.
 
+![Pipeline](../images/pipeline-request.drawio.png)
+
 ## Ambiguity resolution
 
 The library also makes the pipeline responsible for ambiguity resolution. __Ambiguity__, the phenomenon that a sentence may have more than one possible meaning, appears at different levels of processing. It allows each processor to produce multiple alternative readings to the same input. Each of these alternatives will then be tried with the rest of the pipeline, until the first one succeeds. It's a form of depth-first tree traversal.
 
 ## Dependencies
 
-Most processors depend on other processors. This dependency is expressed by passing reference to these dependent processors to the constructor of the processor. By making the dependencies explicit you will be less inclined to put the processors in the wrong order.
+Most processors depend on other processors. This dependency is expressed by passing references to these dependent processors to the constructor of the processor. By making the dependencies explicit you will be less inclined to put the processors in the wrong order.
