@@ -16,3 +16,9 @@ This Python software library allows you to turn human language sentences into Py
 
    language/names.md
 
+.. toctree::
+   :caption: Advanced
+
+   advanced/domain.md
+   
+
