@@ -9,7 +9,7 @@ This Python software library allows you to turn human language sentences into Py
    introduction/parsing.md
    introduction/composition.md
    introduction/pipeline.md
-   introduction/database.md
+   introduction/domain.md
       
 .. toctree::
    :caption: Language
@@ -20,5 +20,5 @@ This Python software library allows you to turn human language sentences into Py
    :caption: Advanced
 
    advanced/domain.md
-   
+
 
