@@ -4,6 +4,8 @@ from richard.processor.parser.BasicParser import BasicParser
 from richard.processor.semantic_composer.SemanticComposer import SemanticComposer
 from richard.processor.semantic_executor.SemanticExecutor import SemanticExecutor
 from richard.processor.tokenizer.BasicTokenizer import BasicTokenizer
+from richard.block.FindOne import FindOne
+from richard.block.FindAll import FindAll
 
 
 def calculation_demo():
@@ -35,17 +37,24 @@ def calculation_demo():
     executor = SemanticExecutor(composer)
 
     pipeline = Pipeline([
-        tokenizer,
-        parser,
-        composer,
-        executor
+        FindOne(tokenizer),
+        FindOne(parser),
+        FindOne(composer),
+        FindOne(executor)
     ])
 
     request = SentenceRequest("What is three plus four")
     pipeline.enter(request)
     print(executor.get_results(request))
     
-    request = SentenceRequest("Calculate three plus four times two", find_all=True)
+    pipeline = Pipeline([
+        FindOne(tokenizer),
+        FindAll(parser),
+        FindAll(composer),
+        FindAll(executor)
+    ])
+
+    request = SentenceRequest("Calculate three plus four times two")
     pipeline.enter(request)
     print(request.get_alternative_products(executor))
     

@@ -2,7 +2,7 @@ from richard.Pipeline import Pipeline
 from richard.entity.SentenceRequest import SentenceRequest
 from richard.processor.parser.BasicParser import BasicParser
 from richard.processor.tokenizer.BasicTokenizer import BasicTokenizer
-
+from richard.block.FindOne import FindOne
 
 def parser_demo():
 
@@ -20,8 +20,8 @@ def parser_demo():
     parser = BasicParser(grammar, tokenizer)
 
     pipeline = Pipeline([
-        tokenizer,
-        parser
+        FindOne(tokenizer),
+        FindOne(parser)
     ])
 
     request = SentenceRequest("John loves Mary")
