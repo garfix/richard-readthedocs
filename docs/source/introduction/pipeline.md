@@ -2,21 +2,27 @@
 
 In the examples before we have used the pipeline without introducing it. It needed some examples to get the idea.
 
-A __pipeline__ is a sequence of steps that process the sentence from tokenization to response. It was popularized by the [Core Language Engine](https://mitpress.mit.edu/9780262512091/the-core-language-engine/) in 1992. The alternative to a processing pipeline is to perform several steps (parsing, semantic analysis, pragmatics) at the same time. A pipeline is more modular, simpler to build and easier to understand.
+A __pipeline__ is a sequence of steps that process the sentence from tokenization to response. It was popularized by the [Core Language Engine](https://mitpress.mit.edu/9780262512091/the-core-language-engine/) in 1992. The alternative to a processing pipeline is to perform several steps (parsing, semantic analysis, feasibility check) at the same time. A pipeline is more modular, simpler to build and easier to understand.
 
 ![Pipeline](../images/pipeline.drawio.png)
 
-The pipeline in this library consists of __processors__, and these can be organized by the programmer. It's even possible to create your own processor and add it to your pipeline.
+The pipeline in this library consists of __control blocks__, and each block contains a __processors__. These can be organized by the programmer. 
+
+## Processor
+
+A __processor__ is an component that performs part of the sentence processing. Examples are the tokenizer and the parser. Each of these works on the products of earlier processors in the pipeline and creates one or more alternative products. This forms the __ambiguity__ of the sentence. Next to the products, a processor may also return an error code, that is useful for debugging.
+
+## Control block
+
+A __control block__ is a control structure. It decides how to deal with alternative products. If you're satisfied to find the first successful interpretation of a sentence, choose the block `FindOne`. If on the other hand, you're looking for all possible interpretations, choose `FindAll`. You can select a different block per processing step, and you can define a new type of block.
+
+The control block implements __ambiguity resolution__. Ambiguity, the phenomenon that a sentence may have more than one possible meaning, appears at different levels of processing. It allows each processor to produce multiple alternative readings to the same input. Each of these alternatives will then be tried with the rest of the pipeline.
 
 ## Sentence request
 
 Each new input sentence is placed in an object, a `SentenceRequest`, and passed through all processors. Each processor takes the products of one or more previous processors, which are stored in this request, and stores its own product in the request as well.
 
 ![Pipeline](../images/pipeline-request.drawio.png)
-
-## Ambiguity resolution
-
-The library also makes the pipeline responsible for ambiguity resolution. __Ambiguity__, the phenomenon that a sentence may have more than one possible meaning, appears at different levels of processing. It allows each processor to produce multiple alternative readings to the same input. Each of these alternatives will then be tried with the rest of the pipeline, until the first one succeeds. It's a form of depth-first tree traversal.
 
 ## Dependencies
 
