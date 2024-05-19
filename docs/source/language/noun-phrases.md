@@ -23,19 +23,20 @@ An `nbar` (originally an n with a bar above it, or n') represents the unqualifie
 }
 ~~~
 
-## np -> qp nbar
+## np -> det nbar
 
-An `np` is a phrase that describes and entity, with an explicit or implicit qualifier or determiner. Example are "every man", "the block", "at least 3 dogs", or just a name ("Afghanistan").
+An `np` is a phrase that describes and entity, with an explicit or implicit determiner. Example are "every man", "the block", "at least 3 dogs", or just a name ("Afghanistan").
 
-The meaning of the np is not the result of a function call, like in most other `sem`s, but rather an object of type `qnp` (for quantified noun phrase). This object will be the first argument to a `find` function. 
+The meaning of the np is not the result of a function call, like in most other `sem`s, but rather an object of type `dnp` (for determined noun phrase). This object will be the first argument to a `find` function. 
 
 The meaning of the np in terms of a list of entities can only be given after it is applied to a verb.
 
 ~~~python
 { 
-    "syn": "np -> qp nbar", 
-    "sem": lambda qp, nbar:  
-            lambda: qnp(qp, nbar) 
+    "syn": "np -> det nbar", 
+    "sem": lambda det, nbar:  
+            lambda: dnp(det, nbar) 
 }
 ~~~
 
+The determiner `det` is explained in [Determiners](determiners.md)
