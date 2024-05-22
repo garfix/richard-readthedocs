@@ -14,4 +14,4 @@ The meaning of the verb needs to consist of a subject-function within an object 
                     domain.relation_exists('borders', [subject, object]) },
 ~~~
 
-It can't be a single function with two paramaters, because the functions are used in different places.
+It can't be a single function with two parameters, because the functions are used in different places.
