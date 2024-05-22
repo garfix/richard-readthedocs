@@ -2,13 +2,13 @@
 
 ## noun -> literal
 
-A `noun` descibes an entity. The meaning of the word "rivers" is formed by the identifiers (ids) of all river entities in the domain.
+A `noun` descibes an entity. The meaning of the word "rivers" is formed by the identifiers (ids) of all river entities in the model.
 
 ~~~python
 { 
     "syn": "noun -> 'rivers'", 
     "sem": lambda: 
-            lambda: domain.get_entity_ids('river') 
+            lambda: model.get_entity_ids('river') 
 }
 ~~~
 
@@ -27,7 +27,7 @@ An `nbar` (originally an n with a bar above it, or n') represents the unqualifie
 
 An `np` is a phrase that describes and entity, with an explicit or implicit determiner. Example are "every man", "the block", "at least 3 dogs", or just a name ("Afghanistan").
 
-The meaning of the np is not the result of a function call, like in most other `sem`s, but rather an object of type `dnp` (for determined noun phrase). This object will be the first argument to a `find` function. 
+The meaning of the np is not the result of a function call, like in most other `sem`s, but rather an object of type `dnp` (for determined noun phrase). This object will be the first argument to a `filter` function. 
 
 The meaning of the np in terms of a list of entities can only be given after it is applied to a verb.
 
@@ -50,7 +50,7 @@ For example: `capital_of(ouagadougou, upper_volta)`
 
 ~~~python
 { "syn": "nbar -> attr np", "sem": lambda attr, np: lambda: attr(np) },
-{ "syn": "attr -> 'capital' 'of'", "sem": lambda: lambda np: domain.search_first('capital_of', np()) },
+{ "syn": "attr -> 'capital' 'of'", "sem": lambda: lambda np: model.search_first('capital_of', np()) },
 ~~~
 
 `search_first` searches for the main entity, given the attribute value.

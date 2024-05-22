@@ -39,17 +39,17 @@ def determiner(result: int, range: int) -> bool:
 
 the latter is a simplification, and the `5` will be variable in reality, but this shows the point: a single function can handle a wide range of quantifiers.
 
-## Find
+## Filter
 
-The determiner's function is applied by the function `find`:
+The determiner's function is applied by the function `filter`:
 
 ~~~Python
-def find(dnp: dnp, vp: callable) -> list:
+def filter(dnp: dnp, vp: callable) -> list:
 ~~~
 
-`find` takes a `dnp` (determined noun phrase, the value of an `np`), and a `vp`. The `dnp` contains a `determiner` function and a `nbar` function. First it runs `nbar` to collect _all_ id's of the `nbar` entity. Then it uses each of these ids as an argument to the `vp` function. If the function contains results, the id is added to the list of results. When done, `find` knows both the total number of ids (called `range`) and the number of ids that delivered results when passed through `vp` (called `result`). Both `result` and `range` are then passed to the `determiner` function. If this function returns `true`, all ids that passed `vp` are returned. If not, it returns an empty list.
+`filter` takes a `dnp` (determined noun phrase, the value of an `np`), and a `vp`. The `dnp` contains a `determiner` function and a `nbar` function. First it runs `nbar` to collect _all_ id's of the `nbar` entity. Then it uses each of these ids as an argument to the `vp` function. If the function contains results, the id is added to the list of results. When done, `filter` knows both the total number of ids (called `range`) and the number of ids that delivered results when passed through `vp` (called `result`). Both `result` and `range` are then passed to the `determiner` function. If this function returns `true`, all ids that passed `vp` are returned. If not, it returns an empty list.
 
-In short, `find` performs the function of general quantification: it passes all entities of `nbar` to `vp` and returns the ones that passed, but only if the function `determiner` is satisfied.
+In short, `filter` performs the function of general quantification: it passes all entities of `nbar` to `vp` and returns the ones that passed, but only if the function `determiner` is satisfied.
 
 ## Quantifiers
 

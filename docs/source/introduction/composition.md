@@ -13,7 +13,7 @@ Here's an example rule that demonstrates a typical 2-part structure of a semanti
     { 
         "syn": "s -> np vp_no_sub", 
         "sem": lambda np, vp_no_sub: 
-                    lambda: find(np(), vp_no_sub) 
+                    lambda: filter(np(), vp_no_sub) 
     },
 
 Notice that "sem" is formed by a nested lambda function. It consists of an _outer function_ that returns an _inner function_. This is a general principle.
@@ -22,7 +22,7 @@ The outer function `lambda np, vp_no_sub: ...` is just needed to import the sema
 
 The parameter names are not required to be the same as the syntactic categories, but it is good practice to keep them that way. An exception occurs when the rule has two of the same syntactic categories, as in `term -> term operator term`. In this case append a follow-up number, like `lambda term1, operator, term2`.
 
-The inner function `lambda: find(np(), vp_no_sub)` forms the real meaning of the rule. It uses the meanings of its child nodes that were made available through the parameters of the outer function.
+The inner function `lambda: filter(np(), vp_no_sub)` forms the real meaning of the rule. It uses the meanings of its child nodes that were made available through the parameters of the outer function.
 
 ## Example script
 
