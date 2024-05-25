@@ -1,6 +1,12 @@
 # Model and Database
 
-This library puts a layer between the application and the database: the model. 
+A grammar could talk to a database directly, but this would put much of the complexity in the grammar, and it is of itself already a source of complexity. It would also make it impossible to reuse the grammar in other domains.
+
+This library puts a layer between the application and the database: the model. The model contains the domain-entities and relations. It's given an application-specific adapter: the Model adapter. The adapter talks to one or more data sources, which can take any form tabular data, most commonly a database. 
+
+![Layers](../images/layers.drawio.png)
+
+Each layer has its own language. The grammar has natural language (English, French). The model has the domain language of relations and entities, which are here expressed in English, but any other language is fine. The data sources each have their own naming conventions.
 
 ## Model: domain and interpretation
 
@@ -10,55 +16,87 @@ In this library, the domain is formed by the rows in a database, the files of a 
 
 The grammar uses the model as an abstraction to decouple it from the database.
 
-__entities__, or in linguistic literature: __sorts__, are the basic concepts of a model: users, customers, persons, products, orders, fields, groups, blocks, etc. Each entity is part of another entity, which is called its parent. For example: a town is a place; a customer is a person; a pyramid is a block. Thus, entities form a __hierarchy__.
+__entities__, or in linguistic literature: __sorts__, are the basic concepts of a model: users, customers, persons, products, orders, fields, groups, blocks, etc. Each entity is part of another entity, which is called its parent. For example: a town is a place; a customer is a person; a pyramid is a block. Thus, entities form a __hierarchy__. They are the meaning of nouns.
 
-__relations__ are connections between entities: borders, has_parent, has_color, is_behind, is_taller.
+__relations__ are connections between entities: borders, is_behind, is_taller. Relations take 2 or more entity arguments. They provide the meaning of verbs and relational expressions.
 
-It's good to make the concepts explicit at the start of a new application. Give them names that are used by the people that work with the application, rather than, say, the names used in the database, though there will be a large overlap.
+__attributes__ express the special has-a relationship that exists between an entity and some characteristic: parent-of, capital-of, size-of, location-of. It take exactly two arguments. The first is the attribute value, the second the entity instance. They provide the meaning of propositional phrases.
 
-Here's a simple model definition with its entities and relations.
+__modifiers__ restrict the range of entities: red, european, big. They are the meaning of adjectives.
 
-~~~python
-model = Model([
-    Entity("customer"),
-    Entity("order"),
-    Entity("product"),
-], [
-    Relation("has_order", ['customer', 'order']),
-    Relation("contains_product", ['order', 'product']),
-])
-~~~
+It's good to make these concepts explicit at the start of a new application. Give them names that are used by the people that work with the application, rather than, say, the names used in the database, though there will be a large overlap.
 
-## Database access
+## Model adapter
 
-To make a grammar reusable we don't want it to use a database directly. In stead, we want it to depend on the model which represents the concepts of the application.
+The model has a generic part and a domain-specific part. The latter is implemented by you in the form of a ModelAdapter. It is passed to the model in the constructor.
 
-The library supports any kind of database access, but has no specific support for any particular database. In the entities and relations of the model you can simply specify what needs to be done to retrieve instances of the entities, and check whether the relations exist.
-
-The following example uses PostgreSQL as example database. 
+Here's a model definition for the Chat-80 demo, with its entities and relations.
 
 ~~~python
-import psycopg2
-from psycopg2.extras import RealDictCursor
+class Chat80Adapter(ModelAdapter):
+    def __init__(self) -> None:
+        super().__init__(
+            attributes=[
+                Attribute("size"),
+                Attribute("capital"),
+                Attribute("location")
+            ],
+            entities=[
+                Entity("river", []),
+                Entity("country", ["size", "capital", "location"]),
+                Entity("city", ["size"]),
+            ], 
+            relations=[
+                Relation("borders", ['country', 'country']),
+            ], 
+        )
 
-connection = psycopg2.connect(database='richard', host='127.0.0.1', user='patrick', password='test123', cursor_factory=RealDictCursor)
-
-def get_all_ids(table: str):
-    cursor = connection.cursor()
-    cursor.execute("SELECT id FROM " + table)
-    return [row['id'] for row in cursor.fetchall()]
-
-model = Model([
-    Entity('customer', lambda: get_all_ids('customer')),
-    Entity('product', lambda: get_all_ids('inventory_item'))
-], [])
+model = Model(Chat80Adapter())
 ~~~
 
-Note that `Entity` contains a function to retrieve the id's of all customers. How you implement it is up to you. In the example we're using a Postgres database to select the id's from a table directly. But the library by no means depends on Postgres, and you can replace the query code to select data from a MySQL database, a Sparql triple store, a csv file, a NumPy array, or whatever suits your needs.
 
-The query to retrieve the ids of all entities is very simple in this example, but you may find you need to join two tables, add a where clause, or even aggregate, to get the result from the database that is expected by the model. We call this __model-database mapping__.
+The adapter also implements the interpretations that map the domain-relations to the database (data source) names.
 
-In most examples here we'll use the simple in-memory database because it's easiest for us. Remember that the database in these examples can be replaced by any other data source.
+This is the interpretation function for relations:
+
+~~~python
+def interpret_relation(self, relation_name: str, values: list[Simple]) -> list[list[Simple]]:
+~~~
+
+It is passed a relation name and the argument values, and it expects a list of records (`list[Simple]`) that match the arguments.
+
+Here's an sample implementation:
+
+~~~python
+def interpret_relation(self, relation_name: str, values: list[Simple]) -> list[list[Simple]]:
+    columns = []
+    if relation_name == "borders":
+        table = "borders"
+        columns = ["country_id1", "country_id2"]
+
+    return ds.select(table, columns, values)
+~~~
+
+As you can see, it maps model names to data source names and passes the request on to the data source.
+
+## Data sources
+
+A data source provides access to any kind of tabular data. It takes the shape of an adapter that makes the underlaying data available via this standard interface:
+
+~~~python
+def select(self, table: str, columns: list[str], values: list[Simple]) -> list[list[Simple]]:
+~~~
+
+Read this interface like an SQL select query:
+
+~~~sql
+SELECT `columns` FROM `table` WHERE `columns`=`values`
+~~~
+
+Note that same columns are both used in the "select" and the "where"
+Note that if a value is None, it must be omitted from the "where"
+
+To add a new data source, copy an existing one that best looks like the one you need, and make changes to it.
 
 ## Model access in the grammar
 
@@ -68,9 +106,9 @@ With this database access from the model in place, we can access the model from 
 [
     { 
         "syn": "noun -> 'parent'", 
-        "sem": lambda: lambda: model.get_entity_ids('parent') 
+        "sem": lambda: lambda: model.get_entity_range('parent') 
     },
 ]
 ~~~
 
-The meaning of the word `parent` is formed by the set of identities (ids) of all parents in the model (or database).
+The meaning of the word `parent` is formed by the range of identities (ids) of all parents in the domain.

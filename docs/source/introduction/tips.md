@@ -17,3 +17,18 @@ After you created some grammar rules, and you start to notice the same structure
 
 Once you start abstracting, take a look at the guidelines we made for building a grammar.
 
+## Semantic grammars
+
+A semantic grammar is a grammar that contains the names of relations and entities in its syntactic rules. For example
+
+    s -> 'what' 'is' aggregate element 'in' material
+
+The categories `aggregate`, `element` and `material` are not syntactic, like `noun` and `verb`. 
+
+This library allows you to create a semantic grammar, and there are good use cases for it. But you must be aware that the grammar you build is very domain-specific and there's a low chance of being able to reuse it in other projects.
+
+Adding some semantic grammar elements to any grammar is normal, however.
+
+## Events
+
+If you need events, use them everywhere, and start using them from the start.
