@@ -20,7 +20,7 @@ __entities__, or in linguistic literature: __sorts__, are the basic concepts of 
 
 __relations__ are connections between entities: borders, is_behind, is_taller. Relations take 2 or more entity arguments. They provide the meaning of verbs and relational expressions.
 
-__attributes__ express the special has-a relationship that exists between an entity and some characteristic: parent-of, capital-of, size-of, location-of. It take exactly two arguments. The first is the attribute value, the second the entity instance. They provide the meaning of propositional phrases.
+__attributes__ express the special has-a relationship that exists between an entity and some characteristic: parent-of, capital-of, size-of, location-of. It take exactly two arguments. The first we call the `value`, the second the `object`. They provide the meaning of propositional phrases.
 
 __modifiers__ restrict the range of entities: red, european, big. They are the meaning of adjectives.
 
@@ -37,14 +37,14 @@ class Chat80Adapter(ModelAdapter):
     def __init__(self) -> None:
         super().__init__(
             attributes=[
-                Attribute("size"),
-                Attribute("capital"),
-                Attribute("location")
+                Attribute("size-of"),
+                Attribute("capital-of"),
+                Attribute("location-of")
             ],
             entities=[
                 Entity("river", []),
-                Entity("country", ["size", "capital", "location"]),
-                Entity("city", ["size"]),
+                Entity("country", ["size-of", "capital-of", "location-of"]),
+                Entity("city", ["size-of"]),
             ], 
             relations=[
                 Relation("borders", ['country', 'country']),
@@ -55,7 +55,7 @@ model = Model(Chat80Adapter())
 ~~~
 
 
-The adapter also implements the interpretations that map the domain-relations to the database (data source) names.
+The adapter also implements the interpretations that map the domain-names to the database-names (more general: data source names).
 
 This is the interpretation function for relations:
 
@@ -96,7 +96,25 @@ SELECT `columns` FROM `table` WHERE `columns`=`values`
 Note that same columns are both used in the "select" and the "where"
 Note that if a value is None, it must be omitted from the "where"
 
-To add a new data source, copy an existing one that best looks like the one you need, and make changes to it.
+To add a new data source, copy an existing one that best looks like the one you need, and make changes to it. To give you an idea, here's the implementation of `PsycoPg2DataSource`:
+
+~~~python
+def select(self, table: str, columns: list[str], values: list[Simple]) -> list[list[Simple]]:
+
+    import psycopg2
+
+    where = "TRUE"
+    variables = []
+    for column, value in zip(columns, values):
+        if value is not None:
+            where += f" AND {column}=%s"
+            variables.append(value)
+
+    cursor = self.connection.cursor(cursor_factory=psycopg2.extensions.cursor)
+    select = ','.join(columns)
+    cursor.execute(f"SELECT {select} FROM {table} WHERE {where}", variables)
+    return [list(row) for row in (cursor.fetchall())]
+~~~
 
 ## Model access in the grammar
 
@@ -112,3 +130,7 @@ With this database access from the model in place, we can access the model from 
 ~~~
 
 The meaning of the word `parent` is formed by the range of identities (ids) of all parents in the domain.
+
+## Range
+
+A `range` is a class that combines a list of entity identifiers (ids) with the name of the entity. 

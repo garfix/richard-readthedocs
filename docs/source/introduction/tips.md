@@ -1,23 +1,20 @@
-# Tips
+# Tips for building a grammar
 
-## About building a grammar
+## Efficiency: less rules is better
 
-Don't try to be perfect. Don't try to be extensible and complete from the start. In fact, start by making a few lines of grammar that exactly fits the need of the sentence your working on. If the sentence is "What rivers are there?", start with a rule that just says:
+A good rule-of-thumb when building a grammar is that less rules is better. This rule has two aspects.
 
-    s -> 'what' nbar 'are' 'there' '?'
+When you start to build a grammar you can get the urge to make the grammar as flexible as you can by creating a big number of rewrite rules. Control this urge. Making a rule more flexible later is easy to do. Simplifying with a rule set that doesn't reflect the demands of the domain is much harder. It's no problem at all to start out with a grammar that contains just a single rule to parse a sentence.
 
-Note that I replaced "rivers" by `nbar` because that's just a no-brainer. The rest of the words are implemented as literal strings.
+    s -> 'what' 'rivers' 'are' 'there' '?'
 
-Create request/response tests in the form:
+This is the perfect implementation of the rule: less rules is better.
 
-- input: "What rivers are there?"
-- expected output: ["amazon", "brahmaputra"]
+The other aspect is about efficiency, of course. After you created some grammar rules, and you start to notice the same structures reoccurring, create extra rules that capture this regularity. This will make your grammar grow and become more powerful. After each change, make your tests work again.
 
-After you created some grammar rules, and you start to notice the same structures reoccurring, create extra rules that capture this regularity. This will make your grammar grow and become more powerful. After each change, make your tests work again.
+The essential point is that there are many ways to make a rule more abstract and flexible starting from one example. But not all of them are equally well. Wait until the patterns present themselves to you.
 
-Once you start abstracting, take a look at the guidelines we made for building a grammar.
-
-## Semantic grammars
+## Semantic grammar
 
 A semantic grammar is a grammar that contains the names of relations and entities in its syntactic rules. For example
 
@@ -29,6 +26,33 @@ This library allows you to create a semantic grammar, and there are good use cas
 
 Adding some semantic grammar elements to any grammar is normal, however.
 
+## Verbs, subjects and objects
+
+All quantifiers treat verb predicates as if they have only a single `np` argument. 
+
+In the following code example, `np` represents only the subject of the verb. `vp_no_sub` may produce a one-placed or a two-placed predicate, but at this level we don't know and don't care. At the sentence level every `np` is a `subject`.
+
+~~~python
+{ 
+    "syn": "s -> 'does' np vp_no_sub '?'",  
+    "sem": lambda np, vp_no_sub: lambda: model.filter_entities(np(), vp_no_sub) 
+}
+~~~
+
+Only when the verb itself is deconstructed, in a `verb-composition-rule` the objects of the verb are added.
+
+~~~python
+{ 
+    "syn": "vp_no_sub -> tv np", 
+    "sem": lambda tv, np: lambda subject: model.filter_entities(np(), tv(subject)) 
+}
+~~~
+
+This rule builds the verb from its parts, and the parts involve objects: the direct object and the indirect object.
+
+This leads us to the following guideline: within a `verb-composition` rule an `np` arguments represents an `object`, but in all other rules, the `np` argument is a `subject`. 
+
 ## Events
 
-If you need events, use them everywhere, and start using them from the start.
+An event is an identifier of a predication.
+
