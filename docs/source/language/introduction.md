@@ -11,3 +11,20 @@ The easy approach I could take in this library would be to say: defining semanti
 As a consequence, take the semantic constructs on the following pages as __a workable approach__. It is based partly on information from books on English grammar semantics, and partly on my own experience and ingenuity. The syntactic rules are loosely based on X-bar theory, but with many modifications. The `create_np` construct was based on the `find` function of [Planner](https://en.wikipedia.org/wiki/Planner_(programming_language)), the procedural semantics engine of [SHRDLU](https://en.wikipedia.org/wiki/SHRDLU).
 
 I encourage you to come up with other approaches, and to experiment. The library was designed to make executional semantics as simple as possible, but that doesn't mean it is. It's (still!) a new world and we are all pioneers!
+
+## The meaning of a sentence
+
+In first order predicate logic the intension of a sentence is its formula, and its extension a truth value. How is this different in this library?
+
+The intension here is executable Python code, and the extension depends on the kind of grammar, and the type of sentence.
+
+Some grammars would only be interested in mathematical expressions, with sentences like "What is the sum of 43 and 78?". In such grammars it makes sense to produce a number as the value of a sentence.
+
+More general, grammars work with sets of values, and most values are `instances` of entities. These "ranges" are passed around and transformed within the sentence, and the value of the sentence is also a set of values.
+
+Exceptionally, a sentence could ask for a combination of instance and attribute. As in "What are the capitals of the countries bordering the Baltic?" in this case the combinations of entities (country) and their attributes (capital) would be considered the value of the sentence.
+
+But in general you could say
+
+> A set of entity instances is the meaning of a sentence
+
