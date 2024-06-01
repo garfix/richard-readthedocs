@@ -10,11 +10,13 @@ A grammar rule can be extended with a __semantic attachment__, expressed by the 
 
 Here's an example rule that demonstrates a typical 2-part structure of a semantic attachment ("sem"):
 
-    { 
-        "syn": "s -> np vp_no_sub", 
-        "sem": lambda np, vp_no_sub: 
-                    lambda: filter(np(), vp_no_sub) 
-    },
+~~~python
+{ 
+    "syn": "s -> np vp_no_sub", 
+    "sem": lambda np, vp_no_sub: 
+            lambda: np(vp_no_sub)
+}
+~~~
 
 Notice that "sem" is formed by a nested lambda function. It consists of an _outer function_ that returns an _inner function_. This is a general principle.
 

@@ -8,7 +8,7 @@ A `noun` descibes an entity. The meaning of the word "rivers" is formed by the i
 { 
     "syn": "noun -> 'rivers'", 
     "sem": lambda: 
-            lambda: model.get_entity_ids('river') 
+            lambda: model.get_instances('river') 
 }
 ~~~
 
@@ -27,35 +27,31 @@ An `nbar` (originally an n with a bar above it, or n') represents the unqualifie
 
 An `np` is a phrase that describes and entity, with an explicit or implicit determiner. Example are "every man", "the block", "at least 3 dogs", or just a name ("Afghanistan").
 
-The meaning of the np is not the result of a function call, like in most other `sem`s, but rather an object of type `dnp` (for determined noun phrase). This object will be the first argument to a `filter` function. 
-
-The meaning of the np in terms of a list of entities can only be given after it is applied to a verb.
+The meaning of the np is a function created by the `create_np`. It uses `nbar` to produce instances and `det` to check if the number of instances is correct, once applied to a verb.
 
 ~~~python
 { 
     "syn": "np -> det nbar", 
     "sem": lambda det, nbar:  
-            lambda: dnp(det, nbar) 
+            lambda: create_np(det, nbar) 
 }
 ~~~
 
 The determiner `det` is explained in [Determiners](determiners.md)
 
 
-# Attributes
+## Attributes
 
-In the sentence "What is the capital of Upper Volta?", "capital of" is an `attribute`. An attribute is not a syntactic category in the classic sense. "capital" would be a noun and "of" a preposition. However, the meaning of the sentence can only be understood if we combine these two to a single group. An attribute is a 2-place predicate where the second argument holds the `entity insatnce` and the first argument the `attribute value` of that entity.
+In the sentence "What is the capital of Upper Volta?", "capital of" is an `attribute`. An attribute is not a syntactic category in the classic sense. "capital" would be a noun and "of" a preposition. However, the meaning of the sentence can only be understood if we combine these two to a single group. An attribute is a 2-place predicate where the second argument holds the `entity instance` and the first argument the `attribute value` of that entity.
 
 For example: `capital_of(ouagadougou, upper_volta)`
 
 ~~~python
-{ "syn": "nbar -> attr np", "sem": lambda attr, np: lambda: attr(np) },
-{ "syn": "attr -> 'capital' 'of'", "sem": lambda: lambda np: model.get_matching_attribute_range('capital-of', np()) },
+{ "syn": "nbar -> attr 'of' np", "sem": lambda attr, np: lambda: model.find_attribute_values(attr, np) },
+{ "syn": "attr -> 'capital'", "sem": lambda: lambda: 'capital-of' },
 ~~~
 
-`search_first` searches for the main entity, given the attribute value.
-
-# Superlatives
+## Superlatives
 
 Words like "largest" are superlatives. They produce the entity that scores highest/lowest in some attribute. The algorithm is:
 
@@ -66,11 +62,11 @@ Words like "largest" are superlatives. They produce the entity that scores highe
 ~~~python
 { 
     "syn": "nbar -> superlative nbar", 
-    "sem": lambda superlative, nbar: lambda: superlative(nbar()) 
+    "sem": lambda superlative, nbar: lambda: superlative(nbar) 
 },
 { 
     "syn": "superlative -> 'largest'", 
-    "sem": lambda: lambda range: model.find_range_attribute_max(range, 'size-of') 
+    "sem": lambda: lambda range: model.find_entity_with_highest_attribute_value(range, 'size-of') 
 }
 ~~~
 

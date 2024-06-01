@@ -12,11 +12,12 @@ This Python software library allows you to turn human language sentences into Py
    introduction/model.md
       
 .. toctree::
-   :caption: Language
+   :caption: Semantic constructs
 
    language/introduction.md
    language/noun-phrases.md
    language/determiners.md
    language/verb-phrases.md
+   language/questions.md
 
 

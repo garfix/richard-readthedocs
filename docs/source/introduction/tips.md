@@ -35,7 +35,8 @@ In the following code example, `np` represents only the subject of the verb. `vp
 ~~~python
 { 
     "syn": "s -> 'does' np vp_no_sub '?'",  
-    "sem": lambda np, vp_no_sub: lambda: model.filter_entities(np(), vp_no_sub) 
+    "sem": lambda np, vp_no_sub: 
+                lambda: np(vp_no_sub) 
 }
 ~~~
 
@@ -44,15 +45,31 @@ Only when the verb itself is deconstructed, in a `verb-composition-rule` the obj
 ~~~python
 { 
     "syn": "vp_no_sub -> tv np", 
-    "sem": lambda tv, np: lambda subject: model.filter_entities(np(), tv(subject)) 
+    "sem": lambda tv, np: 
+                lambda subject: np(tv(subject)) 
 }
 ~~~
 
-This rule builds the verb from its parts, and the parts involve objects: the direct object and the indirect object.
+This rule builds the verb from its parts, and the parts possibly involve objects: the direct object and the indirect object.
 
 This leads us to the following guideline: within a `verb-composition` rule an `np` arguments represents an `object`, but in all other rules, the `np` argument is a `subject`. 
 
+## np or np()?
+
+Since the grammar passes around functions as objects, the moment that one of these functions is executed is variable. So you may find yourself wondering: should I write `np` or `np()` here. That is: execute the function now, or delay its execution. Because this could be a cause of confustion, I created the following rules for it:
+
+> a category that is passed as an argument is never executed before it is passed
+
+This means you can write `tv(subject)` but never `tv(subject())`. If you find that do need to add the brackets, it's a sign that you need to change your rules. The function is only executed by a function of the model.
+
+and
+
+> a category that is returned is always executed
+
+A category at the start of a lambda function is always executed: `lambda verb: np(verb)`, not `lambda verb: np`
+
 ## Events
 
-An event is an identifier of a predication.
+An event is an identifier of a predication that makes the predicate time-dependent. When your application uses events, use them for every predicate, even if you don't see the need for it right away. It's hard to add an event to a predicate later.
+
 

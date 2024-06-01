@@ -11,7 +11,7 @@ The meaning of the verb needs to consist of a subject-function within an object 
   "sem": lambda: 
             lambda object: 
                 lambda subject: 
-                    model.relation_exists('borders', [subject, object]) },
+                    model.find_relation_values('borders', [subject, object]) },
 ~~~
 
 It can't be a single function with two parameters, because the functions are used in different places.

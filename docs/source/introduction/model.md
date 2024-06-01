@@ -1,6 +1,6 @@
 # Model and Database
 
-A grammar could talk to a database directly, but this would put much of the complexity in the grammar, and it is of itself already a source of complexity. It would also make it impossible to reuse the grammar in other domains.
+You could tell the grammar to talk to a database directly, but this would put much of the complexity in the grammar, and it is of itself already a source of complexity. It would also make it impossible to reuse the grammar in other domains.
 
 This library puts a layer between the application and the database: the model. The model contains the domain-entities and relations. It's given an application-specific adapter: the Model adapter. The adapter talks to one or more data sources, which can take any form tabular data, most commonly a database. 
 
@@ -25,6 +25,22 @@ __attributes__ express the special has-a relationship that exists between an ent
 __modifiers__ restrict the range of entities: red, european, big. They are the meaning of adjectives.
 
 It's good to make these concepts explicit at the start of a new application. Give them names that are used by the people that work with the application, rather than, say, the names used in the database, though there will be a large overlap.
+
+## Sets and instances
+
+Entities find their data in a database. When a record is retrieved from the database, an `Instance` object is created for it. This object looks like this:
+
+~~~python
+class Instance:
+    entity: str
+    id: str
+~~~
+
+It contains the name of the enitity it belongs to, as well as the id it has in the database.
+
+Other values that were retrieved from the database are used unchanged: a float will stay a float, an int an int, and a string a string.
+
+The library deals with `sets` of instances. In each grouping of instances, each instance occurs only once. Such a set is commonly called a `range`.
 
 ## Model adapter
 
@@ -124,13 +140,9 @@ With this database access from the model in place, we can access the model from 
 [
     { 
         "syn": "noun -> 'parent'", 
-        "sem": lambda: lambda: model.get_entity_range('parent') 
+        "sem": lambda: lambda: model.get_instances('parent') 
     },
 ]
 ~~~
 
-The meaning of the word `parent` is formed by the range of identities (ids) of all parents in the domain.
-
-## Range
-
-A `range` is a class that combines a list of entity identifiers (ids) with the name of the entity. 
+The meaning of the word `parent` is formed by the range of instances of all parents in the domain.
