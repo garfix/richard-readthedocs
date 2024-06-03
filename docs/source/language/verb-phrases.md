@@ -1,5 +1,13 @@
 # Verbs
 
+A verb is the heart of a sentence, or of a relative clause. It is expressed logically as a predication over a fixed number of arguments. The verb "flow through" for example is in essence `flow_through(X, Y)`. The first argument is called the `subject`, the second `object`, a possible third `indirect object`.
+
+The word `through` in this example is called the `particle` of the verb. Typically it is located just after the verb, but in many cases another phrase is placed between the verb and the particle.
+
+In applications where time plays a role, or application that make statements about events or even states, the `event` needs to be represented explicitly. This is done by adding an extra event argument `E`: `flow_through(E, X, Y)`. In the examples below we will not do that yet.
+
+Once the event has been represented, it becomes possible to create separate relations for the subject and object: `flow_through(E), subject(E, X), object(E, Y)`. This has the advantage that the verb is more flexible. In most cases however, this flexibility is not needed, and the extra relations just add to the complexity and syntactic overhead of the application. Use it only if you have a clear use case for it.
+
 ## Transitive verb
 
 In the phrase "Afghanistan borders China", "borders" is a transitive verb (`tv`): it has a `subject` ("Afghanistan") and an `object` ("China").

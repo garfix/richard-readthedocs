@@ -8,9 +8,13 @@ Thinking of semantics in terms of code in stead of logic means we have to think 
 
 The easy approach I could take in this library would be to say: defining semantics attachment is up to you. Take whichever theoretical framework you like, and good luck! But this would leave you in the dark. Composing semantics is notoriously difficult and you need any help you can get.
 
-As a consequence, take the semantic constructs on the following pages as __a workable approach__. It is based partly on information from books on English grammar semantics, and partly on my own experience and ingenuity. The syntactic rules are loosely based on X-bar theory, but with many modifications. The `create_np` construct was based on the `find` function of [Planner](https://en.wikipedia.org/wiki/Planner_(programming_language)), the procedural semantics engine of [SHRDLU](https://en.wikipedia.org/wiki/SHRDLU).
+As a consequence, take the semantic constructs on the following pages as __a workable approach__. It is based partly on information from books on English grammar semantics, and partly on my own experience and ingenuity. 
 
 I encourage you to come up with other approaches, and to experiment. The library was designed to make executional semantics as simple as possible, but that doesn't mean it is. It's (still!) a new world and we are all pioneers!
+
+## Choice of grammar
+
+There are many kinds of [grammar](https://en.wikipedia.org/wiki/Grammar). Many grammars are suitable to computational linguistics in some way. Which one is best I don't know. Historically most natural language systems use some form of [Phrase Structure Grammar](https://en.wikipedia.org/wiki/Phrase_structure_grammar), probably because it's easier to write a parser for them. In the examples here you will find terms used in [X-bar theory](https://en.wikipedia.org/wiki/X-bar_theory), like "nbar", but the grammars don't adhere to this theory other than that.
 
 ## The meaning of a sentence
 
@@ -22,9 +26,6 @@ Some grammars would only be interested in mathematical expressions, with sentenc
 
 More general, grammars work with sets of values, and most values are `instances` of entities. These "ranges" are passed around and transformed within the sentence, and the value of the sentence is also a set of values.
 
+Some sentences return a single value, like "How many countries does the Danube flow through?"
+
 Exceptionally, a sentence could ask for a combination of instance and attribute. As in "What are the capitals of the countries bordering the Baltic?" in this case the combinations of entities (country) and their attributes (capital) would be considered the value of the sentence.
-
-But in general you could say
-
-> A set of entity instances is the meaning of a sentence
-
