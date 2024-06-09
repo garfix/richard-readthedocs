@@ -68,6 +68,10 @@ and
 
 A category at the start of a lambda function is always executed: `lambda verb: np(verb)`, not `lambda verb: np`
 
+## preposition or part of verb?
+
+How should we model "the river that flows from the Rwanda into the ocean"? Is this a single ditransitive verb "flow-from-into", or is the verb simply "flow" and are "from" and "into" to be modelled as prepositions?
+
 ## Events
 
 An event is an identifier of a predication that makes the predicate time-dependent. When your application uses events, use them for every predicate, even if you don't see the need for it right away. It's hard to add an event to a predicate later.

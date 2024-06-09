@@ -40,7 +40,7 @@ It contains the name of the enitity it belongs to, as well as the id it has in t
 
 Other values that were retrieved from the database are used unchanged: a float will stay a float, an int an int, and a string a string.
 
-The library deals with `sets` of instances. In each grouping of instances, each instance occurs only once. Such a set is commonly called a `range`.
+The library deals with `ordered sets` of instances. In each grouping of instances, each instance occurs only once. Such a set is commonly called a `range`.
 
 ## Model adapter
 

@@ -24,7 +24,7 @@ The intension here is executable Python code, and the extension depends on the k
 
 Some grammars would only be interested in mathematical expressions, with sentences like "What is the sum of 43 and 78?". In such grammars it makes sense to produce a number as the value of a sentence.
 
-More general, grammars work with sets of values, and most values are `instances` of entities. These "ranges" are passed around and transformed within the sentence, and the value of the sentence is also a set of values.
+More general, grammars work with ordered sets of values, and most values are `instances` of entities. These "ranges" are passed around and transformed within the sentence, and the value of the sentence is also a set of values.
 
 Some sentences return a single value, like "How many countries does the Danube flow through?"
 
