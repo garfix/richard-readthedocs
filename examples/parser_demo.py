@@ -7,13 +7,13 @@ from richard.block.FindOne import FindOne
 def parser_demo():
 
     grammar = [
-        { "syn": "s -> np vp" },
-        { "syn": "vp -> verb np" },
-        { "syn": "np -> noun" },
-        { "syn": "noun -> proper_noun" },
-        { "syn": "proper_noun -> 'john'" },
-        { "syn": "proper_noun -> 'mary'" },
-        { "syn": "verb -> 'loves'" },
+        { "syn": "s(V) -> np(E1) vp(V, E1)" },
+        { "syn": "vp(V, E1) -> verb(V) np(E1)" },
+        { "syn": "np(E1) -> noun(E1)" },
+        { "syn": "noun(E1) -> proper_noun(E1)" },
+        { "syn": "proper_noun(E1) -> 'john'" },
+        { "syn": "proper_noun(E1) -> 'mary'" },
+        { "syn": "verb(V) -> 'loves'" },
     ]
 
     tokenizer = BasicTokenizer()

@@ -18,7 +18,7 @@ There are (mainly) three types of verbs:
 
 * __intransitive__ verbs (iv) with a subject but no object ("sleep")
 * __transitive__ verbs (tv) with a subject and an object ("pick up")
-* __ditransitive__ verbs (dtv) with a subject (sub), object (obj), and an indirect object (iobj)  ("flow to", "the river froms from the highlands to the sea")
+* __ditransitive__ verbs (dtv) with a subject (sub), object (obj), and an indirect object (iobj)  ("flow to", "the river flows from the highlands to the sea")
 
 In applications where time plays a role, or application that make statements about events or even states, the `event` needs to be represented explicitly. This is done by adding an extra event argument `E`: `flow_through(E, X, Y)`. In the examples below we will not do that yet.
 

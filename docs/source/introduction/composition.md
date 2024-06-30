@@ -2,9 +2,11 @@
 
 The meaning of a sentence or phrase can be composed of the meaning of its constituent phrases. Known as [Frege's principle](https://en.wikipedia.org/wiki/Principle_of_compositionality), this is the basis of deriving the meaning of a sentence.
 
-It was Richard Montague who first showed that lambda calculus can be used to compose the meaning of a phrase by applying a function on the meanings of its child phrases. This __Montague grammar__ is often used to compose compound predicate logic expressions which are declarative in nature. This library, on the other hand, uses the same principle to create and run executable code.
+A grammar rule can be extended with a __semantic attachment__, expressed by the "sem" key, which expresses the meaning of the phrase covered by the rule. In this library the attachments take the form of lists of atoms. The atom is implemented as a Python tuple.
 
-A grammar rule can be extended with a __semantic attachment__, expressed by the "sem" key, which expresses the meaning of the phrase covered by the rule. In this library the attachments take the form of a Python function.
+An atom is a combination of a predicate with some arguments. Examples are `('river', E1)`, `('give', E1, E2, E3)`. The arguments may be variables (as in the example) or values.
+
+Most sems are lists of atoms. This allows us to combine sems by simply adding the lists. Sems that don't need to be combinable can just be single atoms, or even simple values.
 
 ## Code structure
 
@@ -12,25 +14,28 @@ Here's an example rule that demonstrates a typical 2-part structure of a semanti
 
 ~~~python
 { 
-    "syn": "s -> np vp_no_sub", 
-    "sem": lambda np, vp_no_sub: 
-            lambda: np(vp_no_sub)
+    "syn": "noun(E1) -> 'rivers'", 
+    "sem": lambda: [('river', E1)] 
+},
+{ 
+    "syn": "s(E1) -> np(E1) vp_no_sub(E1)", 
+    "sem": lambda np, vp_no_sub: [('check', E1, np, vp_nosub_obj)]
 }
 ~~~
 
-Notice that "sem" is formed by a nested lambda function. It consists of an _outer function_ that returns an _inner function_. This is a general principle.
+Notice that "sem" is formed by a lambda function that returns a list of atoms.
 
-The outer function `lambda np, vp_no_sub: ...` is just needed to import the semantic functions of the child nodes. Each child is appointed a parameter with the same name as the syntactic category it belongs to. In the example above, `np` is the first consequent of the rule, and `np` is therefore the name of the first parameter of the outer function. In the same way, `vp_no_sub` is the second consequent, and therefore the second parameter. Only categories need parameters. Words (like `'times'` or `'two'` have no need for a parameter, as they have no semantic attachment).
+The function `lambda np, vp_no_sub: ...` is just needed to import the semantic values of the child nodes. Each child is appointed a parameter with the same name as the syntactic category it belongs to. In the example above, `np` is the first consequent of the rule, and `np` is therefore the name of the first parameter of the outer function. In the same way, `vp_no_sub` is the second consequent, and therefore the second parameter. Only categories need parameters. Words (like `'river'` or `'two'` have no need for a parameter, as they have no child nodes).
 
 The parameter names are not required to be the same as the syntactic categories, but it is good practice to keep them that way. An exception occurs when the rule has two of the same syntactic categories, as in `term -> term operator term`. In this case append a follow-up number, like `lambda term1, operator, term2`.
 
-The inner function `lambda: filter(np(), vp_no_sub)` forms the real meaning of the rule. It uses the meanings of its child nodes that were made available through the parameters of the outer function.
+The returned value `[('check', E1, np, vp_nosub_obj)]` forms the real meaning of the rule. It uses the meanings of its child nodes that were made available through the parameters of the outer function.
 
 ## Example script
 
-The idea for the example script below was borrowed from another semantic parser [SEMPRE](https://github.com/percyliang/sempre/blob/master/TUTORIAL.md) (2014 -). It takes a simple grammar to show how the meaning of the sentence: the result of the calculation, is formed by applying functions. The most basic meaning is formed by functions like `lambda: 1` that yield constants. These functions are passed as parameter to an operator functions like `lambda a, b: a() + b()`. They in turn are passed to term functions, which are recursive (`term -> term operator term`).
+The example script below takes a simple grammar to show how the composition of the meaning of the sentence.
 
-The semantic composition itself is performed by the __semantic composer__. It composes the meaning of the sentence into a single function. The __semantic executor__ simply executes this function.
+The semantic composition itself is performed by the __semantic composer__. It composes the meaning of the sentence into a single function. 
 
 ~~~python
 from richard.Pipeline import Pipeline
@@ -40,68 +45,66 @@ from richard.processor.semantic_composer.SemanticComposer import SemanticCompose
 from richard.processor.semantic_executor.SemanticExecutor import SemanticExecutor
 from richard.processor.tokenizer.BasicTokenizer import BasicTokenizer
 from richard.block.FindOne import FindOne
-from richard.block.FindAll import FindAll
+from richard.constants import E1, E2, EXISTS
 
-
-def calculation_demo():
-    """
-    The example was taken from https://github.com/percyliang/sempre/blob/master/TUTORIAL.md
-    """
-
+def composition_demo():
     grammar = [
-        { "syn": "s -> 'what' 'is' term", "sem": lambda expr: lambda: expr() },
-        { "syn": "s -> 'calculate' term", "sem": lambda expr: lambda: expr() },
-        { 
-          "syn": "term -> term operator term", 
-          "sem": lambda term1, operator, term2: 
-                    lambda: operator(term1, term2) 
-        },
-        { "syn": "operator -> 'plus'",  "sem": lambda:  lambda a, b: a() + b() },
-        { "syn": "operator -> 'minus'", "sem": lambda:  lambda a, b: a() - b() },
-        { "syn": "operator -> 'times'",  "sem": lambda:  lambda a, b: a() * b() },
-        { "syn": "operator -> 'divided' 'by'", "sem": lambda:  lambda a, b: a() / b() },
-        { "syn": "term -> 'one'", "sem": lambda: lambda: 1 },
-        { "syn": "term -> 'two'", "sem": lambda: lambda: 2 },
-        { "syn": "term -> 'three'", "sem": lambda: lambda: 3 },
-        { "syn": "term -> 'four'", "sem": lambda: lambda: 4 },
+        { "syn": "s(E1) -> np(E1) vp(E1)", "sem": lambda np, vp: [('check', E1, np, vp)]},
+        { "syn": "vp(E1) -> verb(E1, E2), np(E2)", "sem": lambda verb, np: [('check', E2, np, verb)] },
+        { "syn": "verb(E1, E2) -> 'flows' 'to'", "sem": lambda: [('flow', E1, E2)] },
+        { "syn": "np(E1) -> det(E1) nbar(E1)", "sem": lambda det, nbar: [('quant', E1, det, nbar)] },
+        { "syn": "det(E1) -> 'the'", "sem": lambda: EXISTS },
+        { "syn": "nbar(E1) -> noun(E1)", "sem": lambda noun: noun },
+        { "syn": "noun(E1) -> 'river'", "sem": lambda: [('river', E1)] },
+        { "syn": "noun(E1) -> 'sea'", "sem": lambda: [('sea', E1)] },
     ]
 
     tokenizer = BasicTokenizer()
     parser = BasicParser(grammar, tokenizer)
     composer = SemanticComposer(parser)
-    executor = SemanticExecutor(composer)
 
     pipeline = Pipeline([
         FindOne(tokenizer),
         FindOne(parser),
         FindOne(composer),
-        FindOne(executor)
     ])
 
-    request = SentenceRequest("What is three plus four")
+    request = SentenceRequest("The river flows to the sea")
     pipeline.enter(request)
-    print(executor.get_results(request))
-    
-    pipeline = Pipeline([
-        FindOne(tokenizer),
-        FindAll(parser),
-        FindAll(composer),
-        FindAll(executor)
-    ])
+    print(composer.format_tuples(request))
 
-    request = SentenceRequest("Calculate three plus four times two")
-    pipeline.enter(request)
-    print(request.get_alternative_products(executor))
-    
+
 if __name__ == '__main__':
-    calculation_demo()
+    composition_demo()
 ~~~
 
-Its results:
+The script composes and prints out the resulting meaning of the sentence. It is a tree-structure composed of atoms:
 
-    7
+~~~python
+[
+    ('check', S1, [
+        ('quant', S1, 'exists', [
+            ('river', S1)])], [
+        ('check', S2, [
+            ('quant', S2, 'exists', [
+                ('sea', S2)])], [
+            ('flow', S1, S2)])])]
 
-    [14, 11]
+~~~
 
+Note how the individual atoms have been composed to a tree of nested atoms. Note also that local variables `E1` and `E2` that reoccur in the rules have been replaced by sentence-wide variables `S1`, `S2` and so on. These variables express the fact that the child variables and the parent variables refer to the same values.
 
-By default, the pipeline just returns the first successful alternative. In the second example we tell the request that we want to find all alternatives.
+When the composer combines the child sems with the parent sems, it introduces a new sentence variable for each new variable it encounters. When such a variable is used in a child node, the variable is passed on to the child. This mapping is defined by the variables next to the syntactic categories. 
+
+There are many other forms of semantic composition. The one presented here is both relatively easy to learn and yet very expressive. This will become more clear from the examples given in the rest of the documentation.
+
+## Check and quant
+
+Most sems just consist of lists of atoms that can be added together, resulting in bigger lists of atoms. But whenever a new entity is introduced, it needs to be quantified. This adds nesting to the structure. And as it is common for most sentence to be about multiple entities, each of these entities adds a new level of nesting. 
+
+A `check` has a `quant` and a `body`. The `quant` itself consists of a `determiner` and a `range`. In the first `check` of the example above, the determiner is `exists`, and the range `[('river', S1)]`. The body consists of the second check.
+
+In the example above we just see two entities, `S1` and `S2`. Each of them is quantified (by a `quant`) and "checked". Note that the verb of the sentence ("flow") appears only deeply nested inside the structure. The first `check` iterates over the values of `S1`, and passes each of them to the second check. The second `check` iterates over the values of `S2`, and passes both the values of `S1` and `S2` to the body of the check.
+
+In the atom `('check', E1, np, vp)`, the predicate `check` iterates over all entities of the range and passes each of them as argument to the body. If this results in one or more bindings, the entity is added to the result. When this is done, the  determiner checks if the number of entities in the result agrees with the expected amount. If so, all results are returned. If not, no results are returned.
+

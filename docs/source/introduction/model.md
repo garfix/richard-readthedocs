@@ -2,7 +2,7 @@
 
 You could tell the grammar to talk to a database directly, but this would put much of the complexity in the grammar, and it is of itself already a source of complexity. It would also make it impossible to reuse the grammar in other domains.
 
-This library puts a layer between the application and the database: the model. The model contains the domain-entities and relations. It's given an application-specific adapter: the Model adapter. The adapter talks to one or more data sources, which can take any form tabular data, most commonly a database. 
+This library puts a layer between the application and the database: the model. The model contains the relations. It delegates the implementation of the relations through modules. Each model may talk to a data source (possibly more), which can take any form tabular data, most commonly a database. 
 
 ![Layers](../images/layers.drawio.png)
 
@@ -16,13 +16,9 @@ In this library, the domain is formed by the rows in a database, the files of a 
 
 The grammar uses the model as an abstraction to decouple it from the database.
 
-__entities__, or in linguistic literature: __sorts__, are the basic concepts of a model: users, customers, persons, products, orders, fields, groups, blocks, etc. Each entity is part of another entity, which is called its parent. For example: a town is a place; a customer is a person; a pyramid is a block. Thus, entities form a __hierarchy__. They are the meaning of nouns.
+__types__, or in linguistic literature: __sorts__, are the basic concepts of a model: users, customers, persons, products, orders, fields, groups, blocks, etc. Each entity is part of another entity, which is called its parent. For example: a town is a place; a customer is a person; a pyramid is a block. Thus, entities form a __hierarchy__. They are the meaning of nouns.
 
 __relations__ are connections between entities: borders, is_behind, is_taller. Relations take 2 or more entity arguments. They provide the meaning of verbs and relational expressions.
-
-__attributes__ express the special has-a relationship that exists between an entity and some characteristic: parent-of, capital-of, size-of, location-of. It take exactly two arguments. The first we call the `value`, the second the `object`. They provide the meaning of propositional phrases.
-
-__modifiers__ restrict the range of entities: red, european, big. They are the meaning of adjectives.
 
 It's good to make these concepts explicit at the start of a new application. Give them names that are used by the people that work with the application, rather than, say, the names used in the database, though there will be a large overlap.
 
@@ -36,64 +32,79 @@ class Instance:
     id: str
 ~~~
 
-It contains the name of the enitity it belongs to, as well as the id it has in the database.
+It contains the name of the entity it belongs to, as well as the id it has in the database.
 
 Other values that were retrieved from the database are used unchanged: a float will stay a float, an int an int, and a string a string.
 
 The library deals with `ordered sets` of instances. In each grouping of instances, each instance occurs only once. Such a set is commonly called a `range`.
 
-## Model adapter
+## Module
 
 The model has a generic part and a domain-specific part. The latter is implemented by you in the form of a ModelAdapter. It is passed to the model in the constructor.
 
-Here's a model definition for the Chat-80 demo, with its entities and relations.
+Here's a module definition for the Chat-80 demo, with its relations.
 
 ~~~python
-class Chat80Adapter(ModelAdapter):
-    def __init__(self) -> None:
-        super().__init__(
-            attributes=[
-                Attribute("size-of"),
-                Attribute("capital-of"),
-                Attribute("location-of")
-            ],
-            entities=[
-                Entity("river", []),
-                Entity("country", ["size-of", "capital-of", "location-of"]),
-                Entity("city", ["size-of"]),
-            ], 
-            relations=[
-                Relation("borders", ['country', 'country']),
-            ], 
-        )
+class Chat80Module(SomeModule):
 
-model = Model(Chat80Adapter())
+    ds: SomeDataSource
+
+    def __init__(self, data_source: SomeDataSource) -> None:
+
+        self.ds = data_source
+
+
+    def get_relations(self) -> list[str]:
+        return [
+            "river", 
+            "country", 
+            "capital", 
+            "borders",
+            "resolve_name",
+            "of",
+            "size-of",
+            "where",
+        ]
+
+
+    def interpret_relation(self, relation: str, values: list, solver: SomeSolver, binding: dict) -> list[list]:
+
+        db_values = self.dehydrate_values(values)
+    
+        if relation == "river":
+            out_types = ["river"]
+            out_values = self.ds.select("river", ["id"], db_values)
+        elif relation == "country":
+            out_types = ["country"]
+            out_values = self.ds.select("country", ["id"], db_values)
+        elif relation == "capital":
+            out_types = ["city"]
+            out_values = self.ds.select("country", ["capital"], db_values)
+        elif relation == "borders":
+            out_types = ["country", "country"]
+            out_values = self.ds.select("borders", ["country_id1", "country_id2"], db_values)
+        elif relation == "of":
+            out_types = ["city", "country"]
+            out_values = self.ds.select("country", ["capital", "id"], db_values)
+        elif relation == "size-of":
+            out_types = ["country", None]
+            out_values = self.ds.select("country", ["id", "area"], db_values)
+        elif relation == "where":
+            out_types = ["country", "place"]
+            out_values = self.ds.select("country", ["id", "region"], db_values)
+            print(values, out_values)
+        elif relation == "resolve_name":
+            out_types = [None, "country"]
+            out_values = resolve_name(self.ds, db_values)
+        else:
+            out_types = []
+            out_values = []
+      
+        return self.hydrate_values(out_values, out_types)
+    
 ~~~
-
 
 The adapter also implements the interpretations that map the domain-names to the database-names (more general: data source names).
-
-This is the interpretation function for relations:
-
-~~~python
-def interpret_relation(self, relation_name: str, values: list[Simple]) -> list[list[Simple]]:
-~~~
-
-It is passed a relation name and the argument values, and it expects a list of records (`list[Simple]`) that match the arguments.
-
-Here's an sample implementation:
-
-~~~python
-def interpret_relation(self, relation_name: str, values: list[Simple]) -> list[list[Simple]]:
-    columns = []
-    if relation_name == "borders":
-        table = "borders"
-        columns = ["country_id1", "country_id2"]
-
-    return ds.select(table, columns, values)
-~~~
-
-As you can see, it maps model names to data source names and passes the request on to the data source.
 
 ## Data sources
 
@@ -139,8 +150,8 @@ With this database access from the model in place, we can access the model from 
 ~~~python
 [
     { 
-        "syn": "noun -> 'parent'", 
-        "sem": lambda: lambda: model.get_instances('parent') 
+        "syn": "noun(E1) -> 'parent'", 
+        "sem": lambda: ('parent', E1)
     },
 ]
 ~~~

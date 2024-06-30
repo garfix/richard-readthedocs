@@ -18,13 +18,13 @@ from richard.block.FindOne import FindOne
 def parser_demo():
 
     grammar = [
-        { "syn": "s -> np vp" },
-        { "syn": "vp -> verb np" },
-        { "syn": "np -> noun" },
-        { "syn": "noun -> proper_noun" },
-        { "syn": "proper_noun -> 'john'" },
-        { "syn": "proper_noun -> 'mary'" },
-        { "syn": "verb -> 'loves'" },
+        { "syn": "s(V) -> np(E1) vp(V, E1)" },
+        { "syn": "vp(V, E1) -> verb(V) np(E1)" },
+        { "syn": "np(E1) -> noun(E1)" },
+        { "syn": "noun(E1) -> proper_noun(E1)" },
+        { "syn": "proper_noun(E1) -> 'john'" },
+        { "syn": "proper_noun(E1) -> 'mary'" },
+        { "syn": "verb(V) -> 'loves'" },
     ]
 
     tokenizer = BasicTokenizer()
@@ -46,6 +46,8 @@ if __name__ == '__main__':
     parser_demo()
 
 ~~~
+
+The variables `E1` and `V` that you see after each category within brackets, help to integrate the semantics of child nodes with their parent. In this syntax example they are not important.
 
 Something about the choice of the rewrite rules that form the grammar: these rules, like `vp -> verb np`, are not the only ones possible. Linguistic frameworks have multiple ways of decomposing a sentence. Read [Wikipedia on Grammar](https://en.wikipedia.org/wiki/Grammar) for more information. We'll be using a variant of [X-bar theory](https://en.wikipedia.org/wiki/X-bar_theory) as it suits the composition of semantics well. But other types of grammar may be used as well.
 
