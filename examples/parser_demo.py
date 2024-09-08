@@ -25,9 +25,8 @@ def parser_demo():
     ])
 
     request = SentenceRequest("John loves Mary")
-    pipeline.enter(request)
-
-    tree = parser.get_tree(request)
+    product: BasicParserProduct = pipeline.enter(request)
+    tree = product.parse_tree
     print(tree)
 
 

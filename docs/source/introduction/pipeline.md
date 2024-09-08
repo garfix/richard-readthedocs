@@ -6,15 +6,19 @@ A __pipeline__ is a sequence of steps that process the sentence from tokenizatio
 
 ![Pipeline](../images/pipeline.drawio.png)
 
-The pipeline in this library consists of __control blocks__, and each block contains a __processors__. These can be organized by the programmer. 
+The pipeline in this library consists of __control blocks__, and each block contains a __processors__. These can be organized by the programmer.
 
 ## Processor
 
 A __processor__ is an component that performs part of the sentence processing. Examples are the tokenizer and the parser. Each of these works on the products of earlier processors in the pipeline and creates one or more alternative products. This forms the __ambiguity__ of the sentence. Next to the products, a processor may also return an error code, that is useful for debugging.
 
+A processor produces a __ProcessResult__ that can have an error, indicating that the process failed, or one or more __Products__.
+
 ## Control block
 
 A __control block__ is a control structure. It decides how to deal with alternative products. If you're satisfied to find the first successful interpretation of a sentence, choose the block `FindOne`. If on the other hand, you're looking for all possible interpretations, choose `FindAll`. You can select a different block per processing step, and you can define a new type of block.
+
+A control block produces a __BlockResult__ which may contain an error. If it does, this indicates that the block failed.
 
 The control block implements __ambiguity resolution__. Ambiguity, the phenomenon that a sentence may have more than one possible meaning, appears at different levels of processing. It allows each processor to produce multiple alternative readings to the same input. Each of these alternatives will then be tried with the rest of the pipeline.
 
