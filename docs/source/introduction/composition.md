@@ -8,9 +8,9 @@ An atom is a combination of a predicate with some arguments. Examples are `('riv
 
 Most sems are lists of atoms. This allows us to combine sems by simply adding the lists. Sems that don't need to be combinable can just be single atoms, or even simple values.
 
-## Code structure
+## Adding semantics to the syntax rule
 
-Here's an example rule that demonstrates a typical 2-part structure of a semantic attachment ("sem"):
+Here are example rules that demonstrate the typical 2-part structure of a semantic attachment ("sem"):
 
 ~~~python
 {
@@ -18,22 +18,22 @@ Here's an example rule that demonstrates a typical 2-part structure of a semanti
     "sem": lambda: [('river', E1)]
 },
 {
-    "syn": "s(E1) -> np(E1) vp_no_sub(E1)",
-    "sem": lambda np, vp_no_sub: [('check', E1, np, vp_nosub_obj)]
-}
+    "syn": "vp_nosub_obj(E1) -> tv(E1, E2) np(E2)",
+    "sem": lambda tv, np: apply(np, tv)
+},
 ~~~
 
 Notice that "sem" is formed by a lambda function that returns a list of atoms.
 
-The function `lambda np, vp_no_sub: ...` is used to import the semantic values of the child nodes. Each child value is appointed a parameter with the same name as the syntactic category it belongs to. In the example above, `np` is the first consequent of the rule, and `np` is therefore the name of the first parameter of the function. In the same way, `vp_no_sub` is the second consequent, and therefore the second parameter. Only categories need parameters. Words (like `'river'` or `'two'` have no need for a parameter, as they have no child nodes).
+The function `lambda tv, np: ...` is used to import the semantic values of the child nodes. Each child value is appointed a parameter with the same name as the syntactic category it belongs to. In the example above, `tv` is the first consequent of the rule, and `tv` is therefore the name of the first parameter of the function. In the same way, `np` is the second consequent, and therefore the second parameter. Only categories need parameters. Words (like `'river'` or `'two'` have no need for a parameter, as they have no child nodes).
 
 The parameter names are not required to be the same as the syntactic categories, but it is good practice to keep them that way. An exception occurs when the rule has two of the same syntactic categories, as in `term -> term operator term`. In this case append a follow-up number, like `lambda term1, operator, term2`.
 
-The returned value `[('check', E1, np, vp_nosub_obj)]` forms the real meaning of the rule. It uses the meanings of its child nodes that were made available through the parameters of the outer function.
+The returned value, a list of atoms like `[('river', E1)]`, forms the real meaning of the rule. It uses the meanings of its child nodes that were made available through the parameters of the function.
 
-## Three composition operators
+## Three composition operations
 
-Calculating the semantics of a phrase is done by three operators: add, fill, and apply.
+Calculating the semantics of a phrase is done by three operations: __add__, __fill__, and __apply__.
 
 __add__ simply concatenates two lists. In the following example the sem of `nbar` is calculated from that of `adj` and `nbar` by adding their sems:
 
@@ -53,9 +53,9 @@ __fill__ fills in an argument of a tuple with the sem of a child. In this exampl
 }
 ~~~
 
-__apply__ is more complex. In some cases the structure of a sem is not determined by the node itself, but by one of the child nodes. The first argument of `apply` is thus a __template__ (SemanticTemplate) which is applied to its furter arguments.
+__apply__ is more complex. In some cases the structure of a sem is not determined by the node itself, but by one of the child nodes. This child node delivers a __template__ this then applied by the parent. The first argument of `apply` is thus a template (SemanticTemplate) which is applied to its furter arguments.
 
-In the first rule of the following example `vp_nosub_obj` says: I will use my child `np` as a template to calculate my sem. I will pass it the child `tv` as an argument. Two `np` rules are added as example of how the actual template depends on the inner structure of the `np`.
+In the first rule of the following example `vp_nosub_obj` says: I will use my child `np` as a template to calculate my sem. I will pass it the child `tv` as an argument. Two further `np` rules are added as example of how the actual template depends on the inner structure of the `np`.
 
 ~~~python
 {
@@ -97,8 +97,10 @@ def composition_demo():
         { "syn": "s(E1) -> np(E1) vp(E1)", "sem": lambda np, vp: apply(np, vp)},
         { "syn": "vp(E1) -> verb(E1, E2) np(E2)", "sem": lambda verb, np: apply(np, verb) },
         { "syn": "verb(E1, E2) -> 'flows' 'to'", "sem": lambda: [('flows', E1, E2)] },
-        { "syn": "np(E1) -> det(E1) nbar(E1)", "sem": lambda det, nbar: SemanticTemplate([Body], apply(det, nbar, Body)) },
-        { "syn": "det(E1) -> 'the'", "sem": lambda: SemanticTemplate([Range, Body], Range + Body) },
+        { "syn": "np(E1) -> det(E1) nbar(E1)", "sem": lambda det, nbar:
+            SemanticTemplate([Body], apply(det, nbar, Body)) },
+        { "syn": "det(E1) -> 'the'", "sem": lambda:
+            SemanticTemplate([Range, Body], Range + Body) },
         { "syn": "nbar(E1) -> noun(E1)", "sem": lambda noun: noun },
         { "syn": "noun(E1) -> 'river'", "sem": lambda: [('river', E1)] },
         { "syn": "noun(E1) -> 'sea'", "sem": lambda: [('sea', E1)] },
@@ -139,13 +141,38 @@ When the composer combines the child sems with the parent sems, it introduces a 
 
 There are many other forms of semantic composition. The one presented here is both relatively easy to learn and yet very expressive. This will become more clear from the examples given in the rest of the documentation.
 
-## Semantic template
+## Query optimization
 
-Most sems just consist of lists of atoms that can be added together, resulting in bigger lists of atoms. But whenever a new entity is introduced, it needs to be quantified. This adds nesting to the structure. And as it is common for most sentence to be about multiple entities, each of these entities adds a new level of nesting.
+The composition phase results in a list of atoms. Some of these contain a list of atoms as their arguments themselves. These atoms are about to be executed in order to process the sentence. The atoms form the meaning of the sentence and when executed they perform the function of the sentence. But is this an _efficient_ implementation of the function? Is it fast?
 
-A `check` has a `quant` and a `body`. The `quant` itself consists of a `determiner` and a `range`. In the first `check` of the example above, the determiner is `exists`, and the range `[('river', S1)]`. The body consists of the second check.
+This system, like Prolog, processes atoms (called "goals" in Prolog) one by one. Each atom can either increase or decrease the number of variable bindings. Each of these bindings is then used as input to the subsequent atoms.
 
-In the example above we just see two entities, `S1` and `S2`. Each of them is quantified (by a `quant`) and "checked". Note that the verb of the sentence ("flow") appears only deeply nested inside the structure. The first `check` iterates over the values of `S1`, and passes each of them to the second check. The second `check` iterates over the values of `S2`, and passes both the values of `S1` and `S2` to the body of the check.
+David Warren, one of the pioneer of the Prolog language, and together with Fernando Pereira designer of the famous Chat-80 system, recognized that the inference rules of Prolog are logically sound, but suffer from two performance problems. In the article "Efficient processing of interactive relational database queries expressed in logic" he worked out two ways to overcome them. Both of them have been implemented in the current system, as `BasicQueryOptimizer` which can be added to the composer as `query_optimizer`.
 
-In the atom `('check', E1, np, vp)`, the predicate `check` iterates over all entities of the range and passes each of them as argument to the body. If this results in one or more bindings, the entity is added to the result. When this is done, the  determiner checks if the number of entities in the result agrees with the expected amount. If so, all results are returned. If not, no results are returned.
+### Put resolve_name atoms up front
+
+But let's start with an optimization I added myself. I added `FrontResolveName`, an optimizer that puts all `resolve_name` atoms in the list up front. In most cases a name resolver yields only one or just a few results. Best to place these atoms up front.
+
+### sort by cost
+
+Warren's first optimization is named "ordering goals in a conjunction" and implemented here by `SortByCost`. The basic idea is that an atom that creates less variable alternatives should be placed before an atom that creates more alternatives. The first one "costs less". Cost is determined by the number of tuples in the relation denoted by the predicate of the atom: the __size__ of the relation. Larger relations cost more. But that is not all. Once an argument of the atom is bound, the situation changes as the number of values produced changes quite a bit. How much this number changes depends on the number of different values of the argument: its __cardinality__.
+
+In Warren's example a relation "borders" has a size of 900 tuples. Each of its arguments has cardinality 180. (There are 180 countries which are bordering in 900 different ways) When none of its arguments are bound, the cost of the atom is simply 900. When one argument is bound, the cost reduces to 900/180 and when both arguments are bound the cost reduces even further, to 900/180/180.
+
+While the outcome of any ordering is the same, the performance of an query sorted by cost can increase dramatically.
+
+### isolating subqueries
+
+The second optimization is named "isolating independent parts of a query" and implemented here by "IsolateIndependentParts". The problem is best described by Warren himself: "The problem is essentially that resolution treats all goals in a conjunction as being dependent. This is fine so long as the goals share uninstantiated variables. However when two parts of a conjunction no longer share variables, they should be solved independently."
+
+The best illustration of the problem is in this sentence: "Which is the ocean that borders african countries and that borders asian countries?" which translates to
+
+~~~prolog
+answer(X) :- ocean(X), borders(X, C1), african(C1), country(C1), borders(X, C2), african(C2), country(C2).
+~~~
+
+You can see the similar structures for african and asian countries. The crux is in the fact that C2 is evaluated not once, but for each separate binding of C1. This is inefficient and unnecessary.
+
+Warren didn't give an algorithm for this optimization. It is available in the Prolog code of Chat-80, for the enthusiast. I attempted an implementation based on the numerous examples he gave and I will try to give a bit of an explanation. First I create a dependency graph that links each atom to all other atoms that use the same variable(s). The order of the atoms is retained, and this is important because it the result of earlier optimizations. From this first graph I create a second graph. All atoms are processed anew. If an atom is "global" (it is needed for the response of the sentence), it's made to be independent on other atoms. If the atom has a dependency on a succeeding atom, it is also made to be independent. Otherwise, it is made to be dependent on the first atom it depends on. From this second graph the new query is generated, where each isolated subquery is placed in the body of an `isolated` atom. This kind of predicate executes all atoms in its body, but returns only a single value.
+
 
