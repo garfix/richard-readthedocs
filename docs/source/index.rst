@@ -10,6 +10,8 @@ This Python software library allows you to turn human language sentences into Py
    introduction/composition.md
    introduction/pipeline.md
    introduction/model.md
+   introduction/dialog-context.md
+   introduction/sentence-context.md
    introduction/execution.md
    introduction/responding.md
 

@@ -22,22 +22,6 @@ __relations__ are connections between entities: borders, is_behind, is_taller. R
 
 It's good to make these concepts explicit at the start of a new application. Give them names that are used by the people that work with the application, rather than, say, the names used in the database, though there will be a large overlap.
 
-## Sets and instances
-
-Entities find their data in a database. When a record is retrieved from the database, an `Instance` object is created for it. This object looks like this:
-
-~~~python
-class Instance:
-    entity: str
-    id: str
-~~~
-
-It contains the name of the entity it belongs to, as well as the id it has in the database.
-
-Other values that were retrieved from the database are used unchanged: a float will stay a float, an int an int, and a string a string.
-
-The library deals with `ordered sets` of instances. In each grouping of instances, each instance occurs only once. Such a set is commonly called a `range`.
-
 ## Module
 
 The model has a generic part and a domain-specific part. The latter is implemented by you in the form of a ModelAdapter. It is passed to the model in the constructor.
