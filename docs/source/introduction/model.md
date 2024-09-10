@@ -2,7 +2,7 @@
 
 You could tell the grammar to talk to a database directly, but this would put much of the complexity in the grammar, and it is of itself already a source of complexity. It would also make it impossible to reuse the grammar in other domains.
 
-This library puts a layer between the application and the database: the model. The model contains the relations. It delegates the implementation of the relations through modules. Each model may talk to a data source (possibly more), which can take any form tabular data, most commonly a database. 
+This library puts a layer between the application and the database: the model. The model contains the relations. It delegates the implementation of the relations through modules. Each model may talk to a data source (possibly more), which can take any form tabular data, most commonly a database.
 
 ![Layers](../images/layers.drawio.png)
 
@@ -42,73 +42,54 @@ The library deals with `ordered sets` of instances. In each grouping of instance
 
 The model has a generic part and a domain-specific part. The latter is implemented by you in the form of a ModelAdapter. It is passed to the model in the constructor.
 
-Here's a module definition for the Chat-80 demo, with its relations.
+Here's part of a module definition for the Chat-80 demo, with its relations.
 
 ~~~python
 class Chat80Module(SomeModule):
 
     ds: SomeDataSource
 
+
     def __init__(self, data_source: SomeDataSource) -> None:
 
         self.ds = data_source
+        self.relations = {
+            "river": Relation(query_function=self.simple_entity, relation_size=SMALL, argument_sizes=[SMALL]),
+            "country": Relation(query_function=self.simple_entity, relation_size=MEDIUM, argument_sizes=[MEDIUM]),
+            "ocean": Relation(query_function=self.simple_entity, relation_size=SMALL, argument_sizes=[SMALL]),
+            "sea": Relation(query_function=self.simple_entity, relation_size=SMALL, argument_sizes=[SMALL]),
+            "city": Relation(query_function=self.simple_entity, relation_size=MEDIUM, argument_sizes=[MEDIUM]),
+            "continent": Relation(query_function=self.simple_entity, relation_size=SMALL, argument_sizes=[SMALL]),
+            "capital": Relation(query_function=self.capital, relation_size=MEDIUM, argument_sizes=[MEDIUM]),
+            "borders": Relation(query_function=self.borders, relation_size=LARGE, argument_sizes=[MEDIUM, MEDIUM]),
+            "resolve_name": Relation(query_function=self.resolve_name, relation_size=LARGE, argument_sizes=[LARGE, LARGE]),
+            "of": Relation(query_function=self.of, relation_size=LARGE, argument_sizes=[MEDIUM, MEDIUM]),
+            "size_of": Relation(query_function=self.size_of, relation_size=IGNORED, argument_sizes=[MEDIUM, IGNORED]),
+            "where": Relation(query_function=self.where, relation_size=IGNORED, argument_sizes=[MEDIUM, MEDIUM]),
+            "european": Relation(query_function=self.some_continent, relation_size=MEDIUM, argument_sizes=[MEDIUM]),
+            "asian": Relation(query_function=self.some_continent, relation_size=MEDIUM, argument_sizes=[MEDIUM]),
+            "african": Relation(query_function=self.some_continent, relation_size=MEDIUM, argument_sizes=[MEDIUM]),
+            "american": Relation(query_function=self.some_continent, relation_size=MEDIUM, argument_sizes=[MEDIUM]),
+            "flows_through": Relation(query_function=self.flows_through, relation_size=MEDIUM, argument_sizes=[SMALL, MEDIUM]),
+            "south_of": Relation(query_function=self.south_of, relation_size=IGNORED, argument_sizes=[MEDIUM, MEDIUM]),
+            "flows_from_to": Relation(query_function=self.flows_from_to, relation_size=MEDIUM, argument_sizes=[MEDIUM, MEDIUM, MEDIUM]),
+            "contains": Relation(query_function=self.contains, relation_size=MEDIUM, argument_sizes=[MEDIUM, MEDIUM]),
+            "has_population": Relation(query_function=self.has_population, relation_size=MEDIUM, argument_sizes=[MEDIUM, IGNORED]),
+        }
 
 
-    def get_relations(self) -> list[str]:
-        return [
-            "river", 
-            "country", 
-            "capital", 
-            "borders",
-            "resolve_name",
-            "of",
-            "size-of",
-            "where",
-        ]
+    def simple_entity(self, values: list, context: ExecutionContext) -> list[list]:
+        return self.ds.select(context.predicate, ["id"], values)
 
-
-    def interpret_relation(self, relation: str, values: list, solver: SomeSolver, binding: dict) -> list[list]:
-
-        db_values = self.dehydrate_values(values)
-    
-        if relation == "river":
-            out_types = ["river"]
-            out_values = self.ds.select("river", ["id"], db_values)
-        elif relation == "country":
-            out_types = ["country"]
-            out_values = self.ds.select("country", ["id"], db_values)
-        elif relation == "capital":
-            out_types = ["city"]
-            out_values = self.ds.select("country", ["capital"], db_values)
-        elif relation == "borders":
-            out_types = ["country", "country"]
-            out_values = self.ds.select("borders", ["country_id1", "country_id2"], db_values)
-        elif relation == "of":
-            out_types = ["city", "country"]
-            out_values = self.ds.select("country", ["capital", "id"], db_values)
-        elif relation == "size-of":
-            out_types = ["country", None]
-            out_values = self.ds.select("country", ["id", "area"], db_values)
-        elif relation == "where":
-            out_types = ["country", "place"]
-            out_values = self.ds.select("country", ["id", "region"], db_values)
-            print(values, out_values)
-        elif relation == "resolve_name":
-            out_types = [None, "country"]
-            out_values = resolve_name(self.ds, db_values)
-        else:
-            out_types = []
-            out_values = []
-      
-        return self.hydrate_values(out_values, out_types)
-    
 ~~~
 
 The adapter also implements the interpretations that map the domain-names to the database-names (more general: data source names).
 
 ## Data sources
 
-A data source provides access to any kind of tabular data. It takes the shape of an adapter that makes the underlaying data available via this standard interface:
+A data source provides access to any kind of tabular data. The library has standard data sources for PostgreSQL (via PsycoPg2 and PsycoPg3), MySQL, Sqlite3, Sparql, and its simple built-in in-memory db MemoryDB.
+
+It takes the shape of an adapter that makes the underlaying data available via this standard interface:
 
 ~~~python
 def select(self, table: str, columns: list[str], values: list[Simple]) -> list[list[Simple]]:
@@ -149,8 +130,8 @@ With this database access from the model in place, we can access the model from 
 
 ~~~python
 [
-    { 
-        "syn": "noun(E1) -> 'parent'", 
+    {
+        "syn": "noun(E1) -> 'parent'",
         "sem": lambda: ('parent', E1)
     },
 ]

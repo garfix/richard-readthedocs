@@ -6,7 +6,7 @@ A __pipeline__ is a sequence of steps that process the sentence from tokenizatio
 
 ![Pipeline](../images/pipeline.drawio.png)
 
-The pipeline in this library consists of __control blocks__, and each block contains a __processors__. These can be organized by the programmer.
+The pipeline in this library consists of __control blocks__, and each block contains a __processor__. These can be organized by the programmer.
 
 ## Processor
 

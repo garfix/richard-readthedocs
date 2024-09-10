@@ -149,11 +149,11 @@ This system, like Prolog, processes atoms (called "goals" in Prolog) one by one.
 
 David Warren, one of the pioneer of the Prolog language, and together with Fernando Pereira designer of the famous Chat-80 system, recognized that the inference rules of Prolog are logically sound, but suffer from two performance problems. In the article "Efficient processing of interactive relational database queries expressed in logic" he worked out two ways to overcome them. Both of them have been implemented in the current system, as `BasicQueryOptimizer` which can be added to the composer as `query_optimizer`.
 
-### Put resolve_name atoms up front
+### Place resolve_name atoms up front
 
 But let's start with an optimization I added myself. I added `FrontResolveName`, an optimizer that puts all `resolve_name` atoms in the list up front. In most cases a name resolver yields only one or just a few results. Best to place these atoms up front.
 
-### sort by cost
+### Sort by cost
 
 Warren's first optimization is named "ordering goals in a conjunction" and implemented here by `SortByCost`. The basic idea is that an atom that creates less variable alternatives should be placed before an atom that creates more alternatives. The first one "costs less". Cost is determined by the number of tuples in the relation denoted by the predicate of the atom: the __size__ of the relation. Larger relations cost more. But that is not all. Once an argument of the atom is bound, the situation changes as the number of values produced changes quite a bit. How much this number changes depends on the number of different values of the argument: its __cardinality__.
 
@@ -161,18 +161,18 @@ In Warren's example a relation "borders" has a size of 900 tuples. Each of its a
 
 While the outcome of any ordering is the same, the performance of an query sorted by cost can increase dramatically.
 
-### isolating subqueries
+Atoms that represent database relations are the main candidates for sorting by cost. Other atoms often depend on other atoms. For example `('>', E1, E2)` should not move to a front position. It should only be used if both E1 and E2 are bound.
+
+### Isolating subqueries
 
 The second optimization is named "isolating independent parts of a query" and implemented here by "IsolateIndependentParts". The problem is best described by Warren himself: "The problem is essentially that resolution treats all goals in a conjunction as being dependent. This is fine so long as the goals share uninstantiated variables. However when two parts of a conjunction no longer share variables, they should be solved independently."
 
 The best illustration of the problem is in this sentence: "Which is the ocean that borders african countries and that borders asian countries?" which translates to
 
 ~~~prolog
-answer(X) :- ocean(X), borders(X, C1), african(C1), country(C1), borders(X, C2), african(C2), country(C2).
+answer(X) :- ocean(X), borders(X, C1), african(C1), country(C1), borders(X, C2), asian(C2), country(C2).
 ~~~
 
 You can see the similar structures for african and asian countries. The crux is in the fact that C2 is evaluated not once, but for each separate binding of C1. This is inefficient and unnecessary.
 
 Warren didn't give an algorithm for this optimization. It is available in the Prolog code of Chat-80, for the enthusiast. I attempted an implementation based on the numerous examples he gave and I will try to give a bit of an explanation. First I create a dependency graph that links each atom to all other atoms that use the same variable(s). The order of the atoms is retained, and this is important because it the result of earlier optimizations. From this first graph I create a second graph. All atoms are processed anew. If an atom is "global" (it is needed for the response of the sentence), it's made to be independent on other atoms. If the atom has a dependency on a succeeding atom, it is also made to be independent. Otherwise, it is made to be dependent on the first atom it depends on. From this second graph the new query is generated, where each isolated subquery is placed in the body of an `isolated` atom. This kind of predicate executes all atoms in its body, but returns only a single value.
-
-

@@ -52,7 +52,7 @@ if __name__ == '__main__':
 
 The variables `E1` and `V` that you see after each category within brackets, help to integrate the semantics of child nodes with their parent. You will see how they are important when we get to semantics.
 
-Something about the choice of the rewrite rules that form the grammar: these rules, like `vp -> verb np`, are not the only ones possible. Linguistic frameworks have many ways of decomposing a sentence. Read [Wikipedia on Grammar](https://en.wikipedia.org/wiki/Grammar) for more information. I have not yet found a grammar that fits all purposes, and I will be using slightly different grammar rules throught this documentation. You may look at [X-bar theory](https://en.wikipedia.org/wiki/X-bar_theory) as matches my approach best. But other types of grammar may be used as well.
+Something about the choice of the rewrite rules that form the grammar: these rules, like `vp -> verb np`, are not the only ones possible. Linguistic frameworks have many ways of decomposing a sentence. Read [Wikipedia on Grammar](https://en.wikipedia.org/wiki/Grammar) for more information. I have not yet found a grammar that fits all purposes, and I will be using slightly different grammar rules throughout this documentation. You may look at [X-bar theory](https://en.wikipedia.org/wiki/X-bar_theory) as matches my approach best. But other types of grammar may be used as well.
 
 An important characteristic of a grammar for a semantic parser is that there are many rewrite rules at the sentence level. The results that a sentence produces largely depend on the top-level construct of a sentence.
 
