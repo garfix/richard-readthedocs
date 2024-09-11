@@ -20,53 +20,11 @@ A semantic grammar is a grammar that contains the names of relations and entitie
 
     s -> 'what' 'is' aggregate element 'in' material
 
-The categories `aggregate`, `element` and `material` are not syntactic, like `noun` and `verb`. 
+The categories `aggregate`, `element` and `material` are not syntactic, like `noun` and `verb`.
 
 This library allows you to create a semantic grammar, and there are good use cases for it. But you must be aware that the grammar you build is very domain-specific and there's a low chance of being able to reuse it in other projects.
 
 Adding some semantic grammar elements to any grammar is normal, however.
-
-## Verbs, subjects and objects
-
-All quantifiers treat verb predicates as if they have only a single `np` argument. 
-
-In the following code example, `np` represents only the subject of the verb. `vp_no_sub` may produce a one-placed or a two-placed predicate, but at this level we don't know and don't care. At the sentence level every `np` is a `subject`.
-
-~~~python
-{ 
-    "syn": "s -> 'does' np vp_no_sub '?'",  
-    "sem": lambda np, vp_no_sub: 
-                lambda: np(vp_no_sub) 
-}
-~~~
-
-Only when the verb itself is deconstructed, in a `verb-composition-rule` the objects of the verb are added.
-
-~~~python
-{ 
-    "syn": "vp_no_sub -> tv np", 
-    "sem": lambda tv, np: 
-                lambda subject: np(tv(subject)) 
-}
-~~~
-
-This rule builds the verb from its parts, and the parts possibly involve objects: the direct object and the indirect object.
-
-This leads us to the following guideline: within a `verb-composition` rule an `np` arguments represents an `object`, but in all other rules, the `np` argument is a `subject`. 
-
-## np or np()?
-
-Since the grammar passes around functions as objects, the moment that one of these functions is executed is variable. So you may find yourself wondering: should I write `np` or `np()` here. That is: execute the function now, or delay its execution. Because this could be a cause of confustion, I created the following rules for it:
-
-> a category that is passed as an argument is never executed before it is passed
-
-This means you can write `tv(subject)` but never `tv(subject())`. If you find that do need to add the brackets, it's a sign that you need to change your rules. The function is only executed by a function of the model.
-
-and
-
-> a category that is returned is always executed
-
-A category at the start of a lambda function is always executed: `lambda verb: np(verb)`, not `lambda verb: np`
 
 ## preposition or part of verb?
 

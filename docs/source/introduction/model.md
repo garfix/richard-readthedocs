@@ -142,7 +142,7 @@ With this database access from the model in place, we can access the model from 
 [
     {
         "syn": "noun(E1) -> 'parent'",
-        "sem": lambda: ('parent', E1)
+        "sem": lambda: [('parent', E1)]
     },
 ]
 ~~~
