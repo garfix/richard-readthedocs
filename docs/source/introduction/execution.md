@@ -28,3 +28,25 @@ Some predicates handle lists of atoms for an argument. For example
 ~~~
 
 performs the body `('ocean', $1) ('borders', $1, $2)` and counts the number of results and returns this as `$4`.
+
+## Solver
+
+The executor doesn't execute the list of atoms by itself. It orders the `Solver` to do so. The solver is a lightweight object that gains its power from the fact that it has access to all modules of the model.
+
+The solver goes through the atoms one by one, executing it and collecting its result bindings. Each binding is then passed to the next atom as input. If an atom gives no results, the solver returns an empty list. If all atoms succeed, the solver returns a list of all bindings.
+
+## ExecutionContext
+
+The solves queries the model for all modules that implement a relation. Each relation has `query_function`. This function is called by the solver. The solver passes the current variable bindings as values to the function and expects a list of new values. But it provides more to the relation, because relations can have a wide variety of functions.
+
+The execution context contains
+
+* relation: Relation
+* predicate: str
+* arguments: list
+* binding: dict
+* solver: SomeSolver
+
+`relation` is the Relation object of the relation. `predicate` is the predicate (name) of the relation. `arguments` is the list of arguments __before binding the variables__, so it still contains the variables of the atom. `binding` is the current set of variable-value pairs. `solver` is a reference to the solver. It can be used by the relation to solve lists of atoms by itself.
+
+When a query function is called, the solver passes both the bound arguments (where variables are replaced by their current values) as `db_values`, and the execution context. Most relations just use the current values. The context is used for a variety of special relations.

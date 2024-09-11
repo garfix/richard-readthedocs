@@ -2,6 +2,8 @@
 
 The dialog context is a simple memory module that contains the inferences that are made during the processing of the sentence and that are stored during the remainder of the dialog.
 
+## Inferences
+
 Here's an example of an inference that is stored in the dialog context:
 
 ~~~python

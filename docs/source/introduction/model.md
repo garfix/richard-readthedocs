@@ -24,9 +24,9 @@ It's good to make these concepts explicit at the start of a new application. Giv
 
 ## Module
 
-The model has a generic part and a domain-specific part. The latter is implemented by you in the form of a ModelAdapter. It is passed to the model in the constructor.
+The model is a plugin of the model that provides implementations of relations. For each predicate it supports, it provides the code to implement it.
 
-Here's part of a module definition for the Chat-80 demo, with its relations.
+Here's stripped down module definition for the Chat-80 demo, with its relations.
 
 ~~~python
 class Chat80Module(SomeModule):
@@ -38,27 +38,12 @@ class Chat80Module(SomeModule):
 
         self.ds = data_source
         self.relations = {
-            "river": Relation(query_function=self.simple_entity, relation_size=SMALL, argument_sizes=[SMALL]),
-            "country": Relation(query_function=self.simple_entity, relation_size=MEDIUM, argument_sizes=[MEDIUM]),
-            "ocean": Relation(query_function=self.simple_entity, relation_size=SMALL, argument_sizes=[SMALL]),
-            "sea": Relation(query_function=self.simple_entity, relation_size=SMALL, argument_sizes=[SMALL]),
-            "city": Relation(query_function=self.simple_entity, relation_size=MEDIUM, argument_sizes=[MEDIUM]),
-            "continent": Relation(query_function=self.simple_entity, relation_size=SMALL, argument_sizes=[SMALL]),
-            "capital": Relation(query_function=self.capital, relation_size=MEDIUM, argument_sizes=[MEDIUM]),
-            "borders": Relation(query_function=self.borders, relation_size=LARGE, argument_sizes=[MEDIUM, MEDIUM]),
-            "resolve_name": Relation(query_function=self.resolve_name, relation_size=LARGE, argument_sizes=[LARGE, LARGE]),
-            "of": Relation(query_function=self.of, relation_size=LARGE, argument_sizes=[MEDIUM, MEDIUM]),
-            "size_of": Relation(query_function=self.size_of, relation_size=IGNORED, argument_sizes=[MEDIUM, IGNORED]),
-            "where": Relation(query_function=self.where, relation_size=IGNORED, argument_sizes=[MEDIUM, MEDIUM]),
-            "european": Relation(query_function=self.some_continent, relation_size=MEDIUM, argument_sizes=[MEDIUM]),
-            "asian": Relation(query_function=self.some_continent, relation_size=MEDIUM, argument_sizes=[MEDIUM]),
-            "african": Relation(query_function=self.some_continent, relation_size=MEDIUM, argument_sizes=[MEDIUM]),
-            "american": Relation(query_function=self.some_continent, relation_size=MEDIUM, argument_sizes=[MEDIUM]),
-            "flows_through": Relation(query_function=self.flows_through, relation_size=MEDIUM, argument_sizes=[SMALL, MEDIUM]),
-            "south_of": Relation(query_function=self.south_of, relation_size=IGNORED, argument_sizes=[MEDIUM, MEDIUM]),
-            "flows_from_to": Relation(query_function=self.flows_from_to, relation_size=MEDIUM, argument_sizes=[MEDIUM, MEDIUM, MEDIUM]),
-            "contains": Relation(query_function=self.contains, relation_size=MEDIUM, argument_sizes=[MEDIUM, MEDIUM]),
-            "has_population": Relation(query_function=self.has_population, relation_size=MEDIUM, argument_sizes=[MEDIUM, IGNORED]),
+            "river": Relation(query_function=self.simple_entity,
+            "country": Relation(query_function=self.simple_entity,
+            "capital": Relation(query_function=self.capital,
+            "borders": Relation(query_function=self.borders,
+            "resolve_name": Relation(query_function=self.resolve_name,
+            "of": Relation(query_function=self.of,
         }
 
 
@@ -68,6 +53,47 @@ class Chat80Module(SomeModule):
 ~~~
 
 The adapter also implements the interpretations that map the domain-names to the database-names (more general: data source names).
+
+## Relation
+
+The relation of a module has the following properties:
+
+* query_function
+* write_function
+* relation_size
+* argument_sizes
+* attributes
+
+Not all of them are used in a single relation. There are a few use cases:
+
+In the simplest case, a relation only has a `query_function` that point to the method that implements the read aspect of the relation.
+
+~~~python
+"contains": Relation(query_function=self.contains),
+~~~
+
+In this example, the function `contains` looks like this:
+
+~~~python
+def contains(self, values: list, context: ExecutionContext) -> list[list]:
+    return self.ds.select("contains", ["whole", "part"], values)
+~~~
+
+it just delegates the call to the data source that adapts to the database.
+
+The method may contain any form of Python code to implement the relation. It can perform a calculation, start a new process, look up a value, call an API, anything you may need. The result of the function is a list of results. Each result is also a list, and it contains one value for each of the arguments of the relation. As `contains` has two arguments, the result should have two values, in the argument order of the relation. If the value doesn't matter, use `None`.
+
+A query function may be accompanied by its relation size and argument sizes.
+
+~~~python
+"borders": Relation(query_function=self.borders, relation_size=LARGE, argument_sizes=[MEDIUM, MEDIUM]),
+~~~
+
+These sizes are used by the query optimizer of Composer to determine the best order of execution. When left out, the algorithm will not reorder such atom. Adding size information may do wonders for performance, but only some relations are suitable for this purpose. Relations that access the database are especially well suited. `relation_size` is the number of rows in the table. You can be exact in this, or use one of the predefined constants that provide an order of magnitude. The `argument sizes` contain the cardinality of a column in the database. This is the number of different values.
+
+Relations that are writable to the database implement the `write_function`. Writing to the database is currently only available for the in-memory database. This will change in a future release. Implement it only for relations that need to e written to a database.
+
+In ordinary cases you don't need to specify the `attributes` of a relation. The only current use is by the SimpleMemoryModule to map relations to the datasource in a convenient way.
 
 ## Data sources
 
