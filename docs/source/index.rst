@@ -10,14 +10,18 @@ This Python software library allows you to turn human language sentences into Py
    introduction/composition.md
    introduction/pipeline.md
    introduction/model.md
-   introduction/core-module.md
-   introduction/dialog-context.md
-   introduction/sentence-context.md
    introduction/execution.md
    introduction/responding.md
    introduction/multilinguality.md
-   introduction/inference-engine.md
    introduction/tips.md
+
+.. toctree::
+   :caption: Modules
+
+   modules/core-module.md
+   modules/dialog-context.md
+   modules/sentence-context.md
+   modules/inference-engine.md
 
 .. toctree::
    :caption: Semantic constructs
