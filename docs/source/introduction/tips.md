@@ -22,16 +22,11 @@ A semantic grammar is a grammar that contains the names of relations and entitie
 
 The categories `aggregate`, `element` and `material` are not syntactic, like `noun` and `verb`.
 
-This library allows you to create a semantic grammar, and there are good use cases for it. But you must be aware that the grammar you build is very domain-specific and there's a low chance of being able to reuse it in other projects.
+The current library allows you to create a semantic grammar, and there are some good use cases for it. But you must be aware that the grammar you build is very domain-specific and there's a low chance of being able to reuse it in other projects.
 
 Adding some semantic grammar elements to any grammar is normal, however.
-
-## preposition or part of verb?
-
-How should we model "the river that flows from the Rwanda into the ocean"? Is this a single ditransitive verb "flow-from-into", or is the verb simply "flow" and are "from" and "into" to be modelled as prepositions?
 
 ## Events
 
 An event is an identifier of a predication that makes the predicate time-dependent. When your application uses events, use them for every predicate, even if you don't see the need for it right away. It's hard to add an event to a predicate later.
-
 

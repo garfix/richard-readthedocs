@@ -5,10 +5,9 @@
 A `noun` descibes an entity. The meaning of the word "rivers" is formed by the identifiers (ids) of all river entities in the model.
 
 ~~~python
-{ 
-    "syn": "noun -> 'rivers'", 
-    "sem": lambda: 
-            lambda: model.get_instances('river') 
+{
+    "syn": "noun(E1) -> 'river'",
+    "sem": lambda: [('river', E1)]
 }
 ~~~
 
@@ -17,57 +16,75 @@ A `noun` descibes an entity. The meaning of the word "rivers" is formed by the i
 An `nbar` (originally an n with a bar above it, or n') represents the unqualified part of the `np`. When it rewrites to a `noun`, it's just the meaning of the noun.
 
 ~~~python
-{ 
-    "syn": "nbar -> noun", 
-    "sem": lambda noun: lambda: noun() 
+{
+    "syn": "nbar -> noun",
+    "sem": lambda noun: noun
 }
 ~~~
 
-## Noun phrases with determiners
+## Noun phrases
 
-An `np` is a phrase that describes and entity, with an explicit or implicit determiner. Example are "every man", "the block", "at least 3 dogs", or just a name ("Afghanistan").
+An `np` is a phrase that describes an entity, with an explicit or implicit determiner. Example are "every man", "the block", "at least 3 dogs", or just a name ("Afghanistan"). It is the most common phrase structure and it is always used in conjunction with a verb phrase.
 
-The meaning of the np is a function created by the `create_np`. It uses `nbar` to produce instances and `det` to check if the number of instances is correct, once applied to a verb.
+The meaning of the np is a __template__, which is a function (in the form of an object). This template is always used as the first parameter of an `apply` call, like this:
 
 ~~~python
-{ 
-    "syn": "np -> det nbar", 
-    "sem": lambda det, nbar:  
-            lambda: create_np(det, nbar) 
+{
+    "syn": "vp_nosub_obj(E1) -> tv(E1, E2) np(E2)",
+    "sem": lambda tv, np: apply(np, tv)
 }
 ~~~
+
+Here the meaning of `np` is the template, and it is applied to the `tv`, which means that the `tv` is passed as an argument to the template function to produce the new meaning.
+
+There are a few noun phrases. Each produces a `SemanticTemplate` which takes a single argument: a verb phrase called `Body`. The result of the function uses the `Body` and its child semantics, for example `nbar`.
+
+~~~python
+{
+    "syn": "np(E1) -> nbar(E1)", "sem": lambda nbar:
+            SemanticTemplate([Body], nbar + Body)
+},
+{
+    "syn": "np(E1) -> det(E1) nbar(E1)",
+    "sem": lambda det, nbar:
+            SemanticTemplate([Body], apply(det, nbar, Body))
+}
+~~~
+
+The reason for using an object (`SemanticTemplate`) where a Python function would have been preferable is purely technical. Variable unification requires the variables to be accessible, and they are not accessible from within a Python function.
 
 The determiner `det` is explained in [Determiners](determiners.md)
 
-
 ## Attributes
 
-In the sentence "What is the capital of Upper Volta?", "capital of" is an `attribute`. An attribute is not a syntactic category in the classic sense. "capital" would be a noun and "of" a preposition. However, the meaning of the sentence can only be understood if we combine these two to a single group. An attribute is a 2-place predicate where the second argument holds the `entity instance` and the first argument the `attribute value` of that entity.
+In the sentence "What is the population of Upper Volta?", "population" is an `attribute`: a property of an entity.
 
-For example: `capital_of(ouagadougou, upper_volta)`
+For example: `has_population(upper_volta, E1)`
 
 ~~~python
-{ "syn": "nbar -> attr 'of' np", "sem": lambda attr, np: lambda: model.find_attribute_values(attr, np) },
-{ "syn": "attr -> 'capital'", "sem": lambda: lambda: 'capital-of' },
+{
+    "syn": "attr(E1, E2) -> 'population'",
+    "sem": lambda: [('has_population', E1, E2)]
+}
 ~~~
 
 ## Superlatives
 
 Words like "largest" are superlatives. They produce the entity that scores highest/lowest in some attribute. The algorithm is:
 
-- for each identity, find some attribute value
+- for each entity, find some attribute value
 - find the highest/lowest attribute value
-- return the id of the entity with that attribute value
+- return the entity with that attribute value
 
 ~~~python
-{ 
-    "syn": "nbar -> superlative nbar", 
-    "sem": lambda superlative, nbar: lambda: superlative(nbar) 
+{
+    "syn": "nbar(E1) -> superlative(E1) nbar(E1)",
+    "sem": lambda superlative, nbar: apply(superlative, nbar)
 },
-{ 
-    "syn": "superlative -> 'largest'", 
-    "sem": lambda: lambda range: model.find_entity_with_highest_attribute_value(range, 'size-of') 
+{
+    "syn": "superlative(E1) -> 'largest'", "sem": lambda:
+            SemanticTemplate([Body], [('arg_max', E1, E2, Body + [('size_of', E1, E2)])])
 }
 ~~~
 
-The result is a range with a single entity id.
+Here `E1` in `superlative` will hold the entity with the largest value of `size_of`. This is made possible by treating `superlative` as a template that takes `nbar` as an argument.
