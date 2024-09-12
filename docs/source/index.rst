@@ -29,6 +29,7 @@ This Python software library allows you to turn human language sentences into Py
    language/introduction.md
    language/noun-phrases.md
    language/names.md
+   language/numbers.md
    language/determiners.md
    language/verb-phrases.md
    language/relative-clauses.md

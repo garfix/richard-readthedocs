@@ -8,78 +8,56 @@
 
 Formal logic posits the existential (i.e. at least one) and the universal (i.e. all) quantifiers. Natural language also has numeric quantifiers (like "two", "most", "at least five"). Both can be handled by the same technique of __generalized quantification__. The technique is mainly suitable for quantifiers, but for simplicity it is used here for all determiners.
 
-Generalized quantification implements each quantifier as function that accepts two numbers and returns a boolean:
+Generalized quantification is implemented as a SemanticTemplate that takes a `Range` and a `Body`.
 
 ~~~Python
-def determiner(result: int, range: int) -> bool:
+SemanticTemplate([Range, Body], <determiner-function>)
 ~~~
 
-`range` is the total number of instances of an entity (for example: all children). `result` is the number of children that results when applied to the `vp` (for example: are playing). The range may be restricted to a smaller set of instances when the `np` is in scope of another determiner.
+`Range` is bound to an `nbar` that is the part of the `np` without the determiner (for example: children). `Body` is bound to a `vp` (for example: are playing).
 
-For example, the universal quantifier looks like this:
+A determiner is always used by an `np`, as the first parameter in an `apply` call:
+
+~~~python
+{
+    "syn": "np(E1) -> det(E1) nbar(E1)",
+    "sem": lambda det, nbar:
+            SemanticTemplate([Body], apply(det, nbar, Body))
+}
+~~~
+
+The universal quantifier looks like this:
 
 ~~~Python
-def determiner(result: int, range: int) -> bool:
-    return result == range
+{
+    "syn": "det(E1) -> 'all'",
+    "sem": lambda:
+        SemanticTemplate([Range, Body], [('all', E1, Range, Body)])
+}
 ~~~
 
 while the existential quantifier looks like this:
 
 ~~~Python
-def determiner(result: int, range: int) -> bool:
-    return result > 0
-~~~
-
-and the quantifier "at least 5":
-
-~~~Python
-def determiner(result: int, range: int) -> bool:
-    return result >= 5
-~~~
-
-the latter is a simplification, and the `5` will be variable in reality, but this shows the point: a single function can handle a wide range of quantifiers.
-
-## Filter
-
-The determiner's function is applied by the function `filter`:
-
-~~~Python
-def filter(dnp: dnp, vp: callable) -> list:
-~~~
-
-`filter` takes a `dnp` (determined noun phrase, the value of an `np`), and a `vp`. The `dnp` contains a `determiner` function and a `nbar` function. First it runs `nbar` to collect _all_ id's of the `nbar` entity. Then it uses each of these ids as an argument to the `vp` function. If the function contains results, the id is added to the list of results. When done, `filter` knows both the total number of ids (called `range`) and the number of ids that delivered results when passed through `vp` (called `result`). Both `result` and `range` are then passed to the `determiner` function. If this function returns `true`, all ids that passed `vp` are returned. If not, it returns an empty list.
-
-In short, `filter` performs the function of general quantification: it passes all entities of `nbar` to `vp` and returns the ones that passed, but only if the function `determiner` is satisfied.
-
-## Quantifiers
-
-A quantifier specifies the quantity (amount) of the np. It delivers a function that is 
-
-~~~Python
-{ 
-    "syn": "det -> quantifier", 
-    "sem": lambda quantifier: 
-            lambda result, range: quantifier(result, range) 
+{
+    "syn": "det(E1) -> 'some'",
+    "sem": lambda:
+            SemanticTemplate([Range, Body], Range + Body)
 }
 ~~~
 
-So here is "every"
+Note that the all-quantifier produces an extra atom, whereas the existential quantifier just returns the input. This is important, because it allows the semantic representation to stay shallow, and thus optimizable.
+
+The quantifier "more than":
 
 ~~~Python
-{ 
-    "syn": "quantifier -> 'every'", 
-    "sem": lambda: lambda result, range: result == range 
+{
+    "syn": "det(E1) -> 'more' 'than' number(E1)",
+    "sem": lambda number:
+            SemanticTemplate([Range, Body], [('det_greater_than', Range + Body, number)])
 }
 ~~~
 
-and here is the literal "three":
-
-~~~Python
-{ 
-    "syn": "number -> 'three'", 
-    "sem": lambda: lambda: 3 
-}
-~~~
-
+In the same vein, there are predicates `det_less_than` and `det_equals`.
 
 
