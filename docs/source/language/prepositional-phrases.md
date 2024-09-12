@@ -7,46 +7,45 @@ A prepositional phrases modifies a noun phrase, that is, it restricts the range 
 ## Simple prepositional phrases
 
 ~~~python
-{ 
-    "syn": "np -> np pp", 
-    "sem": lambda np, pp: 
-                create_np(exists, lambda: np(pp)) 
+{
+    "syn": "pp(E1) -> preposition(E1, E2) np(E2)",
+    "sem": lambda preposition, np: apply(np, preposition)
 },
-{ 
-    "syn": "pp -> preposition np", 
-    "sem": lambda preposition, np: 
-                lambda subject: np(preposition(subject)) 
+{
+    "syn": "preposition(E1, E2) -> 'in'",
+    "sem": lambda: [("in", E1, E2)]
 },
-{ 
-    "syn": "preposition -> 'south' 'of'", 
-    "sem": lambda: 
-                lambda e1: lambda e2: model.find_relation_values('south-of', [e1, e2]) 
+{
+    "syn": "preposition(E1, E2) -> 'of'",
+    "sem": lambda: [("of", E1, E2)]
 }
 ~~~
 
-The first rule shows that a PP modified an NP. The second rule evaluates the rightmost argument of the PP relation. The third rule is the basic relation in the form of a nested function: one function for each argument.
+## Idioms
+
+~~~python
+{
+    "syn": "pp(E1) -> 'south' 'of' np(E2)",
+    "sem": lambda np: apply(np, [('south_of', E1, E2)])
+}
+~~~
 
 ## negation
 
 Like "not south of the Equator"
 
 ~~~python
-{ 
-    "syn": "pp -> 'not' preposition np", 
-    "sem": lambda preposition, np: 
-                lambda subject: negate(np(preposition(subject))) 
+{
+    "syn": "pp(E1) -> 'not' pp(E1)",
+    "sem": lambda pp: [('not', pp)]
 }
 ~~~
 
-## Relative clause with AND
-
-The `&` set operator is used here to create the intersection of the two `np` sets.
+## Prepositional phrases with AND
 
 ~~~python
-{ 
-    "syn": "np -> np relative_clause 'and' relative_clause", 
-    "sem": lambda np, rc1, rc2: 
-                create_np(exists, lambda: np(rc1) & np(rc2)) 
+{
+    "syn": "pp(E1) -> pp(E1) 'and' pp(E1)",
+    "sem": lambda pp1, pp2: pp1 + pp2
 }
-
-
+~~~

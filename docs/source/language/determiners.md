@@ -32,7 +32,7 @@ The universal quantifier looks like this:
 {
     "syn": "det(E1) -> 'all'",
     "sem": lambda:
-        SemanticTemplate([Range, Body], [('all', E1, Range, Body)])
+            SemanticTemplate([Range, Body], [('all', E1, Range, Body)])
 }
 ~~~
 

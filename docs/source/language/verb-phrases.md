@@ -1,12 +1,12 @@
 # Verbs
 
-A verb is the heart of a sentence. It is expressed logically as a predication over a fixed number of arguments. The verb "flow through" for example is logically represented by the atomic formula `flow_through(X, Y)`. 
+A verb is the heart of a sentence. It is expressed logically as a predication over a fixed number of arguments. The verb "flow through" for example is logically represented by the atomic formula `flow_through(X, Y)`.
 
-Syntactically, the subject is the first argument you see in a sentence, whether the sentence is active or passive. In "John was bitten by a snake", "John" is the subject. 
+Syntactically, the subject is the first argument you see in a sentence, whether the sentence is active or passive. In "John was bitten by a snake", "John" is the subject.
 
 In linguistic semantics however, the logical representation is key, and the arguments are named after the position in the predication: `predicate(subject, object, indirect object)`.
 
-* __subject__ is the first argument 
+* __subject__ is the first argument
 * __object__ is the second argument
 * __indirect object__ is the third argument
 
@@ -44,25 +44,21 @@ Combinations of omission and reordering are common, as in `vp_noobj_sub`. This v
 
 In the phrase "Afghanistan borders China", "borders" is a transitive verb (`tv`): it has a `subject` ("Afghanistan") and an `object` ("China").
 
-The meaning of the verb needs to consist of a subject-function within an object function, as below:
+The meaning of the verb consists of a list with a single atom.
 
 ~~~python
-{ 
-  "syn": "tv -> 'border'", 
-  "sem": lambda: 
-            lambda sub, obj: model.find_relation_values('borders', [sub, obj], two_ways = True) 
-},
+{
+  "syn": "tv(E1, E2) -> 'border'",
+  "sem": lambda: [('borders', E1, E2)]
+}
 ~~~
-
-Here `two_ways` tells the function that it should also look for borders as `(obj, sub)`, as the borders relation is commutative.
 
 ## Ditransitive verbs
 
 ~~~python
-{ 
-  "syn": "dtv -> 'flows' 'into'", 
-  "sem": lambda: 
-            lambda sub, obj, iob: model.find_relation_values('flows-from-to', [sub, obj, iob]) 
+{
+  "syn": "dtv(E1, E2, E3) -> 'flows' 'into'",
+  "sem": lambda: [('flows_from_to', E1, E2, E3)]
 }
 ~~~
 
@@ -71,25 +67,18 @@ Here `two_ways` tells the function that it should also look for borders as `(obj
 "borders China" is an active vp missing the subject. This subject (`sub`) is passed to this semantic function as an argument, and the function passes it through to its child `tv`. The result is a function with one argument (`obj`) and can be used by `np` to establish membership.
 
 ~~~python
-{ 
-  "syn": "vp_nosub_obj -> vp_nosub_noobj np", 
-  "sem": lambda tv, np: 
-          lambda sub: np(tv(sub)) 
-},
-{ 
-  "syn": "vp_nosub_noobj -> tv", 
-  "sem": lambda tv: 
-          lambda sub: 
-            lambda obj: tv(sub, obj) 
+{
+  "syn": "vp_nosub_obj(E1) -> tv(E1, E2) np(E2)",
+  "sem": lambda tv, np: apply(np, tv)
 }
 ~~~
 
 With negation ("not"):
 
 ~~~python
-{ 
-  "syn": "vp_nosub_obj -> 'does' 'not' vp_nosub_noobj np", 
-  "sem": lambda tv, np: lambda sub: negate(np(tv(sub))) 
+{
+  "syn": "vp_nosub_obj(E1) -> 'does' 'not' vp_nosub_obj(E1)",
+  "sem": lambda vp_nosub_obj: [('not', vp_nosub_obj)]
 }
 ~~~
 
@@ -98,18 +87,13 @@ With negation ("not"):
 Note that the order of `obj` and `sub` is reversed and that the final call to `tv` is the same as in the active form.
 
 ~~~python
-{ 
-  "syn": "vp_noobj_sub -> vp_noobj_nosub 'by' np", 
-  "sem": lambda vp_noobj_nosub, np: 
-            lambda obj: np(vp_noobj_nosub(obj)) 
-},
-{ 
-  "syn": "vp_noobj_nosub -> tv", 
-  "sem": lambda tv: 
-            lambda obj: 
-                lambda sub: tv(sub, obj) 
+{
+  "syn": "vp_noobj_sub(E1) -> tv(E2, E1) 'by' np(E2)",
+  "sem": lambda tv, np: apply(np, tv)
 }
 ~~~
+
+Note the reversal of `E1` and `E2` as arguments to `tv`.
 
 ## Passive ditransitive verbs
 
@@ -118,22 +102,12 @@ The first rule receives an `obj` from its parent function and passes it to it's 
 Note that the first rule uses "from", which makes it not generic.
 
 ~~~python
-{ 
-  "syn": "vp_noobj_sub_iob -> 'from' 'which' np vp_noobj_nosub_iob", 
-  "sem": lambda np, vp_noobj_nosub_iob: 
-            lambda obj: np(vp_noobj_nosub_iob(obj)) 
+{
+  "syn": "vp_noobj_sub_iob(E1) -> 'from' 'which' np(E2) vp_noobj_nosub_iob(E1, E2)",
+  "sem": lambda np, vp_noobj_nosub_iob: apply(np, vp_noobj_nosub_iob)
 },
-{ 
-  "syn": "vp_noobj_nosub_iob -> vp_noobj_nosub_noiob np", 
-  "sem": lambda vp_noobj_nosub_noiob, np: 
-            lambda obj: 
-                lambda sub: np(vp_noobj_nosub_noiob(obj)(sub)) 
-},
-{ 
-  "syn": "vp_noobj_nosub_noiob -> dtv", 
-  "sem": lambda dtv: 
-            lambda obj: 
-                lambda sub: 
-                    lambda iob: dtv(sub, obj, iob) 
+{
+  "syn": "vp_noobj_nosub_iob(E1, E2) -> dtv(E2, E1, E3) np(E3)",
+  "sem": lambda dtv, np: apply(np, dtv)
 }
 ~~~
