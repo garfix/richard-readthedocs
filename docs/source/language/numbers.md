@@ -29,5 +29,7 @@ Finally there are expressions like "10 million", which must resolve to a number 
 }
 ~~~
 
+## Other forms of annotation
 
+The technique to parse numbers can be used for other entities as well, like dates, email addresses and amounts of money. For some forms it will be useful to change the tokenizer as well, to produce single tokens for each entity.
 

@@ -1,6 +1,6 @@
 # Names
 
-A name, or proper noun, is a special noun because it is not listed in the lexicon. It is looked up in the model (in a database).
+A name, or proper noun, is a special noun because it is not listed in the lexicon. It is looked up in the model (in a database), but only when the syntactic structure expects a proper noun. __Named Entity Recognition__ does not take place before parsing, but during execution.
 
 ~~~python
 {

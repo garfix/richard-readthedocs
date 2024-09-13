@@ -77,3 +77,60 @@ s
             +- mary 'Mary'
 ~~~
 
+## Parse tree ordering
+
+A bigger grammar will produce more parse trees. The most important factor for __ambiguity__ is the use of the __token__ category in a rewrite rule, since it matches any word.
+
+The pipeline will try the alternative parse trees one by one, starting with the one that happens to be the first to be produced. Without support, the order of the parse trees would only be influenced by the order of the rewrite rules in the grammar. Depending on this can be tricky and in some cases it is impossible to have the right interpretation come up first.
+
+That's why the parser is equuipped with a few sorting heuristics that help place the best tree up front. These heuristics, combined in `BasicParseTreeSortHeuristics` produce a reasonable result, but you may find it insufficient. It may be needed to replace these basic heuristics with your own.
+
+## Sort by tree depth
+
+The first heuristic sorts parse trees by decreasing tree depth. The most deeply nested sentence is placed first. To illustrate this idea, take the following sentence
+
+> What are the continents no country in which contains more than two cities whose population exceeds 1 million?
+
+It can be parsed (among many others) like this
+
+~~~text
+What are the continents
+             + no country in which contains more than two cities
+             + whose population exceeds 1 million?
+~~~
+
+and like this
+
+~~~text
+What are the continents
+             +  no country in which contains more than two cities
+                                                       + whose population exceeds 1 million?
+~~~
+
+The clause that starts with "whose" can modify either "continents" or "two cities". The latter is a more likely interpretation, since this np is nearer.
+
+I don't know of any literature that supports this claim, however. Let me know if you know of any.
+
+## Sort by token count
+
+The category `token` is used for proper nouns and other entities that can't be listed in full in the lexicon. It matches any token. A grammar with more tokens will create more parse trees and make it accept more sentences. However, when execution starts these tokens are turned into names to be resolved. A sentence with many random tokens will fail. A sentence with the least amount of tokens has the best chance of succeeding and is therefore placed up front.
+
+## Sort by boost
+
+When you __just know__ that one interpretation of a sentence should be preferred over the other, you can "boost" that sentence, like this:
+
+~~~python
+{
+    "syn": "s(E1) -> 'what' 'are' np(E1) '?'",
+    "sem": lambda np: apply(np, []),
+    "inf": [("format", "list"), ("format_list", e1)],
+},
+{
+    "syn": "s(E1, E2) -> 'what' 'are' 'the' noun(E1) 'of' np(E2) '?'",
+    "sem": lambda noun, np: noun + [('of', E1, E2)] + apply(np, []),
+    "inf": [("format", "table"), ("format_table", [e2, e1], [None, None])],
+    "boost": 1
+}
+~~~
+
+The sentence "What are the capitals of european cities?" is matches by both rules, but the second one is more specific and should be preferred. Therefore it is boosted. The default boost value is 0. Multiple boost values can be used if needed.
