@@ -1,11 +1,12 @@
-from richard.Pipeline import Pipeline
+from richard.core.Pipeline import Pipeline
 from richard.entity.SentenceRequest import SentenceRequest
 from richard.processor.parser.BasicParser import BasicParser
 from richard.processor.semantic_composer.SemanticComposer import SemanticComposer
-from richard.processor.semantic_executor.SemanticExecutor import SemanticExecutor
 from richard.processor.tokenizer.BasicTokenizer import BasicTokenizer
 from richard.block.FindOne import FindOne
-from richard.constants import E1, E2, EXISTS
+from richard.core.constants import E1, E2, Body, Range
+from richard.processor.parser.helper.grammar_functions import apply
+from richard.type.SemanticTemplate import SemanticTemplate
 
 def composition_demo():
     grammar = [
@@ -30,8 +31,8 @@ def composition_demo():
     ])
 
     request = SentenceRequest("The river flows to the sea")
-    composition: SemanticComposerProduct = pipeline.enter(request)
-    print(str(composition.get_semantics_last_iteration()))
+    semantics = pipeline.enter(request)
+    print(str(semantics))
 
 
 if __name__ == '__main__':

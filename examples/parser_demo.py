@@ -1,4 +1,4 @@
-from richard.Pipeline import Pipeline
+from richard.core.Pipeline import Pipeline
 from richard.entity.SentenceRequest import SentenceRequest
 from richard.processor.parser.BasicParser import BasicParser
 from richard.processor.tokenizer.BasicTokenizer import BasicTokenizer
@@ -25,9 +25,8 @@ def parser_demo():
     ])
 
     request = SentenceRequest("John loves Mary")
-    product: BasicParserProduct = pipeline.enter(request)
-    tree = product.parse_tree
-    print(tree)
+    parse_tree = pipeline.enter(request)
+    print(parse_tree)
 
 
 if __name__ == '__main__':

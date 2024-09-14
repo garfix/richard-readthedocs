@@ -13,7 +13,7 @@ A __parse tree__ is a tree-representation of a sentence. This __syntactic__ repr
 To see this in action, copy this sample script and run it.
 
 ~~~python
-from richard.Pipeline import Pipeline
+from richard.core.Pipeline import Pipeline
 from richard.entity.SentenceRequest import SentenceRequest
 from richard.processor.parser.BasicParser import BasicParser
 from richard.processor.tokenizer.BasicTokenizer import BasicTokenizer
@@ -40,14 +40,12 @@ def parser_demo():
     ])
 
     request = SentenceRequest("John loves Mary")
-    product: BasicParserProduct = pipeline.enter(request)
-    tree = product.parse_tree
-    print(tree)
+    parse_tree = pipeline.enter(request)
+    print(parse_tree)
 
 
 if __name__ == '__main__':
     parser_demo()
-
 ~~~
 
 The variables `E1` and `V` that you see after each category within brackets, help to integrate the semantics of child nodes with their parent. You will see how they are important when we get to semantics.
