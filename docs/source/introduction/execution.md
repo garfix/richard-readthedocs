@@ -50,3 +50,9 @@ The execution context contains
 `relation` is the Relation object of the relation. `predicate` is the predicate (name) of the relation. `arguments` is the list of arguments __before binding the variables__, so it still contains the variables of the atom. `binding` is the current set of variable-value pairs. `solver` is a reference to the solver. It can be used by the relation to solve lists of atoms by itself.
 
 When a query function is called, the solver passes both the bound arguments (where variables are replaced by their current values) as `db_values`, and the execution context. Most relations just use the current values. The context is used for a variety of special relations.
+
+## Processing exception
+
+When a relation handler finds a problem that can't be resolved within the process, yet needs to be communicated with the user, the handler may raise a `ProcessingException` with a message. This message will be part of the result of the process and the block, and will end up in the response to the user.
+
+An example is handling `resolve_name`. If the name can't be found, there's no use returning an empty list as this will result in an empty response and this is not useful to the user. In stead the handler can raise a `ProcessingException` with the message: "Name not found: ..."

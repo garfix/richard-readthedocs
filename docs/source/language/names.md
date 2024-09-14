@@ -30,10 +30,12 @@ def resolve_name(self, values: list, context: ExecutionContext) -> list[list]:
     if name == 'equator':
         return [['equator', 'equator']]
 
-    raise Exception("Name not found: " + name)
+    raise ProcessingException("Name not found: " + name)
 ~~~
 
 Your implementation may either be simpler or more complex. Basically the function looks up the name in all tables where names are stored.
+
+The `ProcessingException` will be the result of the process and the block, and will end up in the response to the user.
 
 This is a naive implementation as the same name may be available in multiple entity types. A better implementation makes use of inferences to induce the type of the entity. `resolve_name` can then just select the table associated with that entity.
 
@@ -69,7 +71,7 @@ def resolve_name(self, values: list, context: ExecutionContext) -> list[list]:
     elif type == "person":
         out_values = self.ds.select("person", ["id", "id"], [name, None])
     else:
-        raise Exception("Name not found: " + name)
+        raise ProcessingException("Name not found: " + name)
 
     return out_values
 ~~~
