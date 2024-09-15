@@ -1,4 +1,4 @@
-# Entity Grammar
+# Entity Unification Grammar
 
 The grammar formalism of this library was developed by me in order to make semantic composition easier than was possible with the existing techniques.
 
@@ -40,7 +40,7 @@ In the above exaple, `tv` will be rewritten by another rule. Here's an example:
 }
 ~~~
 
-`E1` and `E2` are sentence variables. There scope is the rule they are in. The composer will __dialog variables__ for these variables, and these have dialog scope. They happen to be the same here, but that's because the rules reuse a few variables. If the rule would have been written like this:
+`E1` and `E2` are sentence variables. There scope is the rule they are in. The composer will create __dialog variables__ for these variables, and these have dialog scope. They happen to be the same here, but that's because the rules use the same small set of variables. If the rule would have been written like this:
 
 ~~~python
 {

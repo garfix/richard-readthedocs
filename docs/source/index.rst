@@ -7,7 +7,7 @@ This Python software library allows you to turn human language sentences into Py
    :caption: Introduction
 
    introduction/parsing.md
-   introduction/entity-grammar.md
+   introduction/entity-unification-grammar.md
    introduction/composition.md
    introduction/pipeline.md
    introduction/model.md
