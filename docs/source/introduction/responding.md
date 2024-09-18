@@ -51,3 +51,15 @@ The format is `("format", "number")` and `("format_number", e2, "ksqmiles")` is 
 ~~~
 
 The format is `("format", "table")` and `("format_table", [e3, e1], [None, 'ksqmiles'])` is its extension. The output here is not a string, but a list of lists (a table). The first row consists of the header: the second argument `[None, 'ksqmiles']`. For each of the bindings a row is created with the values of `e3` and `e1` in that order.
+
+## Canned
+
+~~~python
+{
+    "syn": "s(E1) -> 'bye' '.'",
+    "sem": lambda: [],
+    "inf": [("format", "canned"), ("format_canned", "Cheerio.")],
+},
+~~~
+
+The so called "canned response" just returns a fixed line of text. In this example it returns "Cheerio." in response to the user's "bye.".
