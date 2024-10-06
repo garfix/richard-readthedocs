@@ -15,6 +15,7 @@ This Python software library allows you to turn human language sentences into Py
    introduction/responding.md
    introduction/multilinguality.md
    introduction/tips.md
+   introduction/major-choices.md
 
 .. toctree::
    :caption: Modules
@@ -37,4 +38,9 @@ This Python software library allows you to turn human language sentences into Py
    language/prepositional-phrases.md
    language/questions.md
 
+.. toctree::
+   :caption: Demos
 
+   demos/introduction.md
+   demos/cooper.md
+   demos/chat-80.md

@@ -14,19 +14,13 @@ The other aspect is about efficiency, of course. After you created some grammar 
 
 The essential point is that there are many ways to make a rule more abstract and flexible starting from one example. But not all of them are equally well. Wait until the patterns present themselves to you.
 
-## Semantic grammar
+## Tests may pass by accident
 
-A semantic grammar is a grammar that contains the names of relations and entities in its syntactic rules. For example
+When you add a new sentence to your test suite, the first thought is likely to be: let's first check if it just works. You run the test and find that it either works or that it fails. If you're like me and you see the test pass, you think: "Good! Up to the next one!". After you add some more tests you may find that these start to fail and you don't understand why, because the previous tests passed as well and they're about the same. You find that some tests have <b>passed by accident</b>. This is a common phenomenon, and it happens more in tests with simple anwers like "True", "False", or "OK".
 
-    s -> 'what' 'is' aggregate element 'in' material
+You can deal with the phenomenon by following these rules:
 
-The categories `aggregate`, `element` and `material` are not syntactic, like `noun` and `verb`.
-
-The current library allows you to create a semantic grammar, and there are some good use cases for it. But you must be aware that the grammar you build is very domain-specific and there's a low chance of being able to reuse it in other projects.
-
-Adding some semantic grammar elements to any grammar is normal, however.
-
-## Events
-
-An event is an identifier of a predication that makes the predicate time-dependent. When your application uses events, use them for every predicate, even if you don't see the need for it right away. It's hard to add an event to a predicate later.
+* Plan what the system should do
+* Add the rules to make that possible
+* Check if the system follows your plan
 

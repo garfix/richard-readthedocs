@@ -4,7 +4,7 @@ Before we get into semantics, we need to learn about tokens and parse trees.
 
 A __tokenizer__ breaks a sentence up into smaller parts, __tokens__, which form the input to the parser. As an example sentence let's take "John loves Mary". Our basic tokenizer cuts up the sentence into the tokens `John`, `loves`, and `Mary`. It does this by collecting all letter-groups of the sentence, using a regular expression.
 
-The __BasicTokenizer__ splits a string up in words (combinations of letters, digits and underscores) and other non-space characters. Each non-space character is turned into a separate token. If you need a different a different way of tokenization, create a sublass of the BasicTokenizer, have it tokenize a string in the way you want, and use this in stead.
+The __BasicTokenizer__ splits a string up in words (combinations of letters, digits and underscores) and other non-space characters. Each non-space character is turned into a separate token. If you need a different way of tokenization, create a sublass of the BasicTokenizer, have it tokenize a string in the way you want, and use this in stead.
 
 A tokenizer, like any processor, can even produce multiple products. A tokenization process that yields multiple tokenizations implements a form of ambiguity, but I don't know of any use cases.
 
