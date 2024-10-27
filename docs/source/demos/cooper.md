@@ -1,14 +1,16 @@
 # Cooper's system
 
-This demo aims to replicate a dialog of William S. Cooper's system as described in "Fact Retrieval and Deductive Question-Answering Informatlon Retrieval Systems" - Cooper (1964)
-
-The source code for the demo can be found [https://github.com/garfix/richard/blob/main/tests/integration/Cooper_test.py](here)
+This demo replicates a dialog of William S. Cooper's system as described in "Fact Retrieval and Deductive Question-Answering Informatlon Retrieval Systems" - Cooper (1964)
 
 The main features of this model are:
 
 * Use of three-valued logic (true, false, unknown); a open world assumption
 * Learning names of things
 * Learning simple rules about things
+
+The open world assumption is not mentioned in the article, and the concept is neither explicitly mentioned nor essential for the system. I choose 3-valued logic because I thought it was in the spirit of the system, and that this would be a good opportunity to experiment with it. I found it hard, to be honest. For one, I had to find out how to do 3-valued logic. This included creating the 3-valued variants of `not` and `and`, as well as being able to store both negative and positive facts in a database. I don't recommend using this experiment as the basis for your own system, unless you have a good reason to distinguish between `false` and `unknown`, or you just want to experiment with this kind of logic.
+
+Clone the repository to view and run the demo. The code can be found in `tests/integration/Cooper_test.py`
 
 ## Two grammars
 

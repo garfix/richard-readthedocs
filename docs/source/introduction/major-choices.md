@@ -22,7 +22,7 @@ A system adhering the __closed world assumption__ assumes that the model contain
 
 A system adhering the __open world assumption__ _does not_ assume that the model contains all knowledge there is. It admits that it has incomplete knowledge. It proves a fact by looking it up or deducing it. It disproves a fact by looking up the __negative fact__ or deducing it. When no fact can be deduced, the result is not "no", but "unknown".
 
-The current library uses closed world by default, but is able to work with open world as well. Closed world is conceptually and syntactically easier to develop, but some domains may demand open world. The __Cooper's system__ demo experiments with open world.
+The current library uses closed world by default, but is able to work with open world as well. Closed world is conceptually and syntactically easier to develop, but some domains may demand open world. __Cooper's system__ demo experiments with open world.
 
 ## Semantic grammar
 
