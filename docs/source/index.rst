@@ -1,8 +1,6 @@
 Richard!
 ===================================
 
-.. include:: ../intro.md
-
 .. toctree::
    :caption: Introduction
 
@@ -45,3 +43,7 @@ Richard!
    demos/introduction.md
    demos/chat-80.md
    demos/cooper.md
+
+.. include:: ../intro.md
+   :parser: myst_parser.sphinx_
+   :start-after: <!-- index.rst content start -->
