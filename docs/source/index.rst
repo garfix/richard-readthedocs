@@ -1,6 +1,8 @@
 Richard!
 ===================================
 
+This Python software library allows you to turn human language sentences into Python code. It is suited for both simple commands and complex questions with nested clauses.
+
 .. toctree::
    :caption: Introduction
 
@@ -44,6 +46,6 @@ Richard!
    demos/chat-80.md
    demos/cooper.md
 
-.. include:: ../intro.md
+.. include:: intro.md
    :parser: myst_parser.sphinx_
    :start-after: <!-- index.rst content start -->
