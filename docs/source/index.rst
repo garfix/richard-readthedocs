@@ -6,6 +6,7 @@ This Python software library allows you to turn human language sentences into Py
 .. toctree::
    :caption: Introduction
 
+   introduction/get-started.md
    introduction/parsing.md
    introduction/entity-unification-grammar.md
    introduction/composition.md
