@@ -2,6 +2,8 @@
 
 This demo aims to replicate a dialog of William S. Cooper's system as described in "Fact Retrieval and Deductive Question-Answering Informatlon Retrieval Systems" - Cooper (1964)
 
+The source code for the demo can be found [https://github.com/garfix/richard/blob/main/tests/integration/Cooper_test.py](here)
+
 The main features of this model are:
 
 * Use of three-valued logic (true, false, unknown); a open world assumption

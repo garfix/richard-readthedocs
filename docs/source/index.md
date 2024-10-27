@@ -43,5 +43,5 @@ This Python software library allows you to turn human language sentences into Py
    :caption: Demos
 
    demos/introduction.md
-   demos/cooper.md
    demos/chat-80.md
+   demos/cooper.md
