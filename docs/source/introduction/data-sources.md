@@ -71,6 +71,32 @@ connection = sqlite3.connect(':memory:')
 ds = Sqlite3DataSource(connection)
 ~~~
 
+## SPARQL
+
+There's a basic adapter for SPARQL databases, that will likely need to be extended for practical use.
+
+Here's example code that creates a custom class (here: WikidataDataSource) that wraps `SparqlDataSource` with custom configuration. The reason for this approach is that each of the methods of the base class can be overridden as needed.
+
+~~~python
+class WikidataDataSource(SparqlDataSource):
+
+    def __init__(self, result_cache_path: bool=None):
+        """
+        It's important to add a proper User Agent or you will get many 403 denied responses
+        If you intend to use this data source for your own application, change it to something personal
+
+        see also: https://foundation.wikimedia.org/wiki/Policy:User-Agent_policy
+        """
+        super().__init__("https://query.wikidata.org/sparql",
+            result_cache_path=result_cache_path,
+            headers={
+                "User-Agent": "YOUR_REPO_NAME/1.0 (https://github.com/PATH_TO_YOUR_REPO; YOUR_EMAIL_ADDRESS) YOUR_REPO_NAME/VERSION"
+            }
+        )
+~~~
+
+The `result_cache_path` is the name of a directory where you can cache SPARQL results. Caching will cause a big performance gain for recurring queries.
+
 ## Create a custom data source
 
 Data sources for other relational databases can be added easily. Other services can be added as data source as well. And this will be described here.

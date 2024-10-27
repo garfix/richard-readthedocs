@@ -32,7 +32,7 @@ These are described [here](../introduction/composition.md)
 
 ## References
 
-The dialog replicated can be found here: https://github.com/JanWielemaker/chat80/blob/master/prolog/chat80/demo
+The dialog replicated can be found [here](https://github.com/JanWielemaker/chat80/blob/master/prolog/chat80/demo)
 
 CHAT-80 is mainly described in
 
