@@ -38,3 +38,17 @@ The replication has logical operators that handle tree-valued logic:
 
 The result of evaluating a sentence in the second grammar is also a truth value. Whereas a regular grammar in our system passes entities around, this replication also passes truth values around. This is not a problem because truth values are entities as well.
 
+## Learning rules
+
+Cooper's dialog contains sentences like
+
+* no metal is a nonmetal
+* combustable things burn
+
+These rules are learned by the system at runtime in order to be used in inferences.
+
+"no metal is a nonmetal" is turned into `nonmetal(E1, 'false') :- metal(E1, 'true').`
+
+"combustable things burn" is turned into `burns(E1, 'true') :- combustable(E1, 'true').`
+
+The inference module has a built-in predicate `learn_rule` for this purpose. It takes a head and body as arguments.

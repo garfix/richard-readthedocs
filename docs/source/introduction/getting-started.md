@@ -12,7 +12,7 @@ You're probably interested to see some demos of the system. See [the introductio
 
 ## Start your own project
 
-After that, pick a demo that looks like the system you intend to design, copy and adapt it to suit your needs.
+After that, pick a demo that looks like the system you intend to design. Copy it and adapt it to suit your needs.
 
 In your project you build a processing pipeline. It consists of control blocks with processors, like this:
 
@@ -26,7 +26,7 @@ pipeline = Pipeline([
 ])
 ~~~
 
-When you have a pipeline, it can process a sentence entered by the user, like this:
+When you have a pipeline, it can process a sentence that is entered by the user, like this:
 
 ~~~python
 question = "How many children has Madonna?"
@@ -35,7 +35,7 @@ result = pipeline.enter(SentenceRequest(question))
 
 The result you get is the product of the last processor in the pipeline. This result can be used by you to show it to the user.
 
-## Grow by extending a test dialog
+## Grow your project by extending a dialog
 
 When looking at the demos you'll notice that they all use a demo dialog to test all interactions. Such a dialog serves as a means to automatically test your system, to make sure that previous constructions still work after you change your modules.
 
@@ -71,5 +71,5 @@ Now you know how to get started, read the documentation to find out more about t
 
 * __Introduction__ teaches you the basics
 * __Language__ shows you how to turn language constructs into semantic constructs
-* __Modules__ provide information about the available modules to use in your system
+* __Modules__ provide information about the available modules
 

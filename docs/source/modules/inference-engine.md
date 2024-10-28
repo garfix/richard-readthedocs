@@ -44,3 +44,19 @@ grand_parent(X, Y) :- parent(X, Z), parent(Z, Y).
 ~~~
 
 The `parent` rules are facts. They have no conditions.
+
+## ('learn_rule', head, [body-atoms])
+
+The `learn_rule` predicate lets you learn the system a new rule at runtime. For example:
+
+~~~
+{
+    "sem": lambda noun, are, np: [('learn_rule', np[0], noun)],
+}
+~~~
+
+Here `np[0]` holds the tuple that is the head of the rule, while `noun` holds the tuples that form the body.
+
+Before storing the new rule, the head and body are bound to the activate variable values.
+
+_Cooper's system_ has some examples.

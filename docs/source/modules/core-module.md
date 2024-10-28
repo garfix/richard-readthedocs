@@ -83,3 +83,14 @@ Implements the all-quantor.
 ## ('none', [body-atoms])
 
 Executes `body-atoms`. If this gives any results, it returns an empty list. If there are no results, it returns a list with a single value: True
+
+## ('scoped', [body-atoms])
+
+Executes `body-atoms` in a separate scope. All bindings that are produced in this function are discarded when the function completes. The function returns an empty set if `body-atoms` produces no results; it returns a set with the single tuple containing `None` if `body-atoms` does produce results.
+
+It is used internally by the query optimizer, and can be used by the programmer to produce independent parts of the query.
+
+## ('store', [body-atoms])
+
+Binds `body-atoms` to the active variable values, and passes the atoms, one by one, to the solver, to be stored by an acceptepting module. This is a module that has a `write_function` for the predicate.
+

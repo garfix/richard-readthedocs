@@ -5,11 +5,15 @@ A name, or proper noun, is a special noun because it is not listed in the lexico
 ~~~python
 {
     "syn": "noun(E1) -> proper_noun(E1)",
-    "sem": lambda proper_noun: [('resolve_name', proper_noun, E1)]
+    "sem": lambda proper_noun: proper_noun
 },
 {
     "syn": "proper_noun(E1) -> token(E1)",
-    "sem": lambda token: token
+    "sem": lambda token: [('resolve_name', token, E1)]
+}
+{
+    "syn": "proper_noun(E1) -> token(E1) token(E1)",
+    "sem": lambda token1, token2: [('resolve_name', token1 + " " + token2, E1)]
 }
 ~~~
 
@@ -36,6 +40,8 @@ def resolve_name(self, values: list, context: ExecutionContext) -> list[list]:
 Your implementation may either be simpler or more complex. Basically the function looks up the name in all tables where names are stored.
 
 The `ProcessingException` will be the result of the process and the block, and will end up in the response to the user.
+
+## Using inferences
 
 This is a naive implementation as the same name may be available in multiple entity types. A better implementation makes use of inferences to induce the type of the entity. `resolve_name` can then just select the table associated with that entity.
 
@@ -74,4 +80,58 @@ def resolve_name(self, values: list, context: ExecutionContext) -> list[list]:
         raise ProcessingException("Name not found: " + name)
 
     return out_values
+~~~
+
+## Learning names
+
+To make the system learn a new name when it first occurs, you could use the following code to implement `resolve_name` in a module. It is taken from _Cooper's demo_.
+
+~~~python
+def resolve_name(self, values: list, context: ExecutionContext) -> list[list]:
+    name = values[0].lower()
+    id = values[1]
+
+    out_values = self.ds.select("name", ["name", "id"], [name, None])
+    if len(out_values) > 0:
+        return out_values
+    else:
+        # if id is given, a new name is linked to that id
+        if id is None:
+            # otherwise a new id is created for the name
+            id = context.arguments[1].name
+        self.ds.insert("name", ["name", "id", ], [name, id])
+        return [
+            [name, id]
+        ]
+~~~
+
+The predicate takes an `name` and an `id`. The `id` may be `None`. First the function tries to look up the `id` from the `name` in the database. When found, it is returned. If it is not found, an `id` is created from the name of the dialog variable (which is different for each entity), and inserted into the database.
+
+## Synonyms
+
+To express the fact that one name refers to the same entity as another name, you can use this sem:
+
+~~~python
+{
+    "syn": "s(E1) -> proper_noun(E1) 'is' proper_noun(E1)",
+    "sem": lambda proper_noun1, proper_noun2: proper_noun1 + proper_noun2,
+}
+~~~
+
+## Compound noun names
+
+This section is about compound nouns like "sodium chloride", used as proper nouns, when the class of the entity is to be inferred from the name. In the case of "sodium chloride", that it is a cloride. You can infer this by using an inference ("inf").
+
+~~~python
+# proper noun
+# "magnesium"
+{ "syn": "proper_noun(E1) -> token(E1)", "sem": lambda token: [('resolve_name', token, E1)] },
+# "ferrous sulfide"
+{ "syn": "proper_noun(E1) -> token(E1) token(E1)", "sem": lambda token1, token2: [('resolve_name', token1 + " " + token2, E1)] },
+{ "syn": "proper_noun(E1) -> token(E1) main_noun(E1)", "sem": lambda token, main_noun: [('resolve_name', token + ' ' + main_noun, E1)] },
+
+# the major part a compound noun
+{ "syn": "main_noun(E1) -> 'oxide'", "sem": lambda: 'oxide', "inf": [("oxide", e1)] },
+{ "syn": "main_noun(E1) -> 'chloride'", "sem": lambda: 'chloride', "inf": [("chloride", e1)] },
+{ "syn": "main_noun(E1) -> 'sulfide'", "sem": lambda: 'sulfide', "inf": [("sulfide", e1)] },
 ~~~
