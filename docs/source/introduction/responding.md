@@ -63,3 +63,15 @@ The format is `("format", "table")` and `("format_table", [e3, e1], [None, 'ksqm
 ~~~
 
 The so called "canned response" just returns a fixed line of text. In this example it returns "Cheerio." in response to the user's "bye.".
+
+The responses `list` and `number` can use `format_canned` as well. A placeholder `{}` is used to hold the result:
+
+~~~python
+{
+    "syn": "s(E3) -> 'how' 'many' common_noun(E1) 'does' proper_noun(E2) 'have' '?'",
+    "sem": lambda common_noun1, common_noun2: common_noun1 + common_noun2 + [('count', E3, [('have', E2, E1)])],
+    "inf": [("format", "number"), ("format_number", e3, ''), ('format_canned', 'The answer is {}')],
+}
+~~~
+
+This example can yield the response: "The answer is 10".

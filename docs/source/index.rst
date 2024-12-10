@@ -39,7 +39,7 @@ This Python software library allows you to turn human language sentences into Py
    language/relative-clauses.md
    language/prepositional-phrases.md
    language/questions.md
-   language/learning-concepts.md
+   language/is-a.md
 
 .. toctree::
    :caption: Demos

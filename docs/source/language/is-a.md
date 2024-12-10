@@ -1,8 +1,8 @@
-# Learning new concepts
+# Is a
 
 With language you can define new concepts using the construct "is a".
 
-It may be a class, like this, where "dog" and "Brumby" are new:
+It may be a class, like this, where "dog" and "Brumby" are introduced:
 
     A dog is a mammal
     A Brumby is a horse
@@ -35,17 +35,17 @@ Learning an instance should allow
 
 ## Class is-a
 
-The class-subset relationship ("A dog is a mammal") can be modelled like this. First the sentence rule:
+While is-a for classes can be implemented as a rule (`mammal(E1) :- dog(E1).`), these rules can only be applied to instances, it can't be used to reason about class inheritance. Using the relation `isa` allows reasoning about both instances and classes.
 
 ~~~python
 {
     "syn": "s() -> a() common_noun(E1) 'is' a() common_noun(E2)",
-    "sem": lambda common_noun1, a2, common_noun2: [('learn_rule', common_noun2[0], common_noun1)],
+    "sem": lambda common_noun1, a2, common_noun2: [('store', [('isa', common_noun2[0], common_noun1)])],
     "inf": [("format", "canned"), ("format_canned", "I understand")],
 },
 ~~~
 
-Then the `common_noun` rule, that contains the relation as its meaning, learns a new lexical entry (in the form of a grammar rule), and creates a relation (table).
+This rule uses a `common_noun` rule, that contains the relation as its meaning, learns a new lexical entry (in the form of a grammar rule), and creates a relation (table).
 
 ~~~python
 { "syn": "common_noun(E1) -> token(E1)", "sem": lambda token: [ (token, E1) ],
@@ -56,17 +56,16 @@ Then the `common_noun` rule, that contains the relation as its meaning, learns a
 
 ~~~
 
-The left hand side of "is a" is either an existing noun, in which case the `is-a` relation is established, or a new noun, in which case the word is also add to the grammar. A system may also allow the right hand side of "is a" to be an new noun (see "SIR"), but this is a bit strange because you are explaining a word in terms of another word that is also not known yet. In that case the second `common_noun` is changed into `noun`.
-
 ## Instance is-a
 
-The class-instance relationship ("Blue is a color") can be modelled like this. First find or create the id of the instance ("Blue"). Then store the relation ("color") bound to the id.
+Similarly, is-a for instances can be implemented as a tuple (`dog('fido')`), but this makes it impossible to reason about class inheritance involving both instances and classes. If the latter is needed, use the relation `isa` here as well.
 
 ~~~python
 {
-    "syn": "s() -> proper_noun(E1) 'is' a() common_noun(E1)",
-    "sem": lambda proper_noun, a, common_noun: proper_noun + [('store', common_noun)]
-}
+    "syn": "s() -> proper_noun(E1) 'is' a() common_noun(E2)",
+    "sem": lambda proper_noun, a, common_noun: [('store', [('isa', proper_noun[0], common_noun)])],
+    "inf": [("format", "canned"), ("format_canned", "I understand")],
+},
 ~~~
 
 The id of the class can be found or created like this:
@@ -74,6 +73,3 @@ The id of the class can be found or created like this:
 ~~~python
 { "syn": "proper_noun(E1) -> token(E1)", "sem": lambda token: [('resolve_name', token, E1)] },
 ~~~
-
-
-
