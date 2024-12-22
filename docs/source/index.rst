@@ -26,6 +26,7 @@ This Python software library allows you to turn human language sentences into Py
    modules/dialog-context.md
    modules/sentence-context.md
    modules/inference-engine.md
+   modules/grammar-module.md
 
 .. toctree::
    :caption: Semantic constructs
@@ -48,3 +49,5 @@ This Python software library allows you to turn human language sentences into Py
    demos/chat-80.md
    demos/wikidata.md
    demos/cooper.md
+   demos/sir.md
+
