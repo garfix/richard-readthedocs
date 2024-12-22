@@ -1,12 +1,10 @@
-# Tokenization and parsing
+# Parsing
 
 Before we get into semantics, we need to learn about tokens and parse trees.
 
-A __tokenizer__ breaks a sentence up into smaller parts, __tokens__, which form the input to the parser. As an example sentence let's take "John loves Mary". Our basic tokenizer cuts up the sentence into the tokens `John`, `loves`, and `Mary`. It does this by collecting all letter-groups of the sentence, using a regular expression.
+A __tokenizer__ breaks a sentence up into smaller parts, __tokens__, which form the input to the parser. As an example sentence let's take "John loves Mary". A tokenizer could cut up the sentence into the tokens `John`, `loves`, and `Mary`. However, this would limit the analysis to the word level, and would require another analyser to analyse the morphemes of a word. This system combines parsing and __morphological analysis__ and to that end it splits the sentence into characters: `J` `o` `h` `n` ` ` `l` `o` `v` `e` `s` ` ` `M` `a` `r` `y` `. Technically, the character is the token, but since there's not much use in that, I call a token a sequence of characters: either a fixed character string or the match of a regular expression.
 
-The __BasicTokenizer__ splits a string up in words (combinations of letters, digits and underscores) and other non-space characters. Each non-space character is turned into a separate token. If you need a different way of tokenization, create a sublass of the BasicTokenizer, have it tokenize a string in the way you want, and use this in stead.
-
-A tokenizer, like any processor, can even produce multiple products. A tokenization process that yields multiple tokenizations implements a form of ambiguity, but I don't know of any use cases.
+All whitespace sequences of space, tabs and newlines are replaced by a single space.
 
 A __parse tree__ is a tree-representation of a sentence. This __syntactic__ representation is based on the hierarchical nature of language: a sentence is a compound of phrases, and these phrases are themselves composed of other phrases. A __parser__ parses a sentence to form such a tree. It uses __rewrite rules__ to transform the root node "s" into the branches "np" and "vp". These branches are then themselves rewritten into new branches. It's a recursive process that ends in the words of the sentence.
 
@@ -16,7 +14,6 @@ To see this in action, copy this sample script and run it.
 from richard.core.Pipeline import Pipeline
 from richard.entity.SentenceRequest import SentenceRequest
 from richard.processor.parser.BasicParser import BasicParser
-from richard.processor.tokenizer.BasicTokenizer import BasicTokenizer
 from richard.block.FindOne import FindOne
 
 def parser_demo():
@@ -31,11 +28,9 @@ def parser_demo():
         { "syn": "verb(V) -> 'loves'" },
     ]
 
-    tokenizer = BasicTokenizer()
-    parser = BasicParser(grammar, tokenizer)
+    parser = BasicParser(grammar)
 
     pipeline = Pipeline([
-        FindOne(tokenizer),
         FindOne(parser)
     ])
 
@@ -54,7 +49,7 @@ Something about the choice of the rewrite rules that form the grammar: these rul
 
 An important characteristic of a grammar for a semantic parser is that there are many rewrite rules at the sentence level. The results that a sentence produces largely depend on the top-level construct of a sentence.
 
-This library uses [Earley's parser](https://en.wikipedia.org/wiki/Earley_parser), which is fast and efficient, and doesn't fall into infinite recursion with left-recursive rules (i.e. `a -> a b`).
+This library uses [Earley's parser](https://en.wikipedia.org/wiki/Earley_parser), which is fast and efficient, and doesn't fall into infinite recursion with left-recursive rules (i.e. `a -> a b`). The algorithm is adapted to use spans of tokens (here: characters), rather than work with individual tokens.
 
 You may be missing a lexicon in this example. A __lexicon__ is a collection of all the individual words of a language, together with their meanings. This library integrates the lexicon in the grammar to simplify the definition of idioms. An __idiom__ is a group of words that does not form a phrase but contains a specific meaning. For example: "How many countries have population above 100 million?"
 
@@ -74,6 +69,48 @@ s
          +- proper_noun
             +- mary 'Mary'
 ~~~
+
+## character strings and regular expressions
+
+A character string like 'mary' matches a sequence of 4 tokens: `M`, `a`, `r` and `y`.
+
+In stead of character strings, you can also use a regular expression like `/\w+/` or `/\d+/`.
+
+~~~python
+{
+    "syn": "proper_noun(E1) -> /\w+/",
+    "sem": lambda token: [('resolve_name', token, E1)]
+}
+~~~
+
+## Token delimiters
+
+The default delimiter between two phrases or tokens is the space ("  "). However, when no space is expected, use the `+` delimiter to glue together two tokens:
+
+~~~python
+{
+    "syn": "s(E1) -> 'does' np(E1) vp_nosub_obj(E1)+'?'",
+}
+~~~
+
+The `+` delimiter is essential in analysing morphemes. In this example the plural "s" is simply discarded:
+
+~~~python
+{
+    "syn": "common_noun(E1) -> common_noun(E1)+'s'",
+    "sem": lambda common_noun: common_noun
+}
+~~~
+
+If a space is optional but not required, use the tilde delimeter: `~`:
+
+~~~python
+{
+    "syn": "s(E1) -> 'does' np(E1) vp_nosub_obj(E1)~'?'",
+}
+~~~
+
+This says: the sentence ends with a question mark, possibly preceded by space.
 
 ## Parse tree ordering
 
