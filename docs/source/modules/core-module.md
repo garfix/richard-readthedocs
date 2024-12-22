@@ -2,19 +2,19 @@
 
 The core module is always added to a model and contains some common relations.
 
-## ('==', E1, E2)
+## ('equals', E1, E2)
 
 If both `E1` and `E2` are bound, it checks if they are equal. If so, it returns a single result with both values in it. If not, it returns no results.
 
 If only one argument is bound, it returns a single result where the unbound variable is given the value of the bound variable.
 
-## ('>', E1, E2)
+## ('greater_than', E1, E2)
 
 Both `E1` and `E2` should be bound.
 
 If `E1` is larger than `E2`, it returns a single result with both values in it. If not, it returns no results.
 
-## ('<', E1, E2)
+## ('less_than', E1, E2)
 
 Both `E1` and `E2` should be bound.
 
@@ -52,7 +52,7 @@ Executes `body-atoms`. If this gives any results, it returns an empty list. If t
 
 It implements the logical __not__ in a __closed world assumption__ where the absence of results implies the opposite.
 
-## ('=', E1, C)
+## ('let', E1, C)
 
 Assigns `C` to `E1`.
 

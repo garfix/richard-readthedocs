@@ -27,6 +27,7 @@ This Python software library allows you to turn human language sentences into Py
    modules/sentence-context.md
    modules/inference-engine.md
    modules/grammar-module.md
+   modules/custom-modules.md
 
 .. toctree::
    :caption: Semantic constructs

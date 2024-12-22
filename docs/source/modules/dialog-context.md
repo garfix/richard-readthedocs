@@ -10,11 +10,11 @@ Here's an example of an inference that is stored in the dialog context:
 {
     "syn": "noun(E1) -> 'river'",
     "sem": lambda: [('river', E1)],
-    "inf": [('isa', e1, 'river')]
+    "inf": [('dialog_isa', e1, 'river')]
 }
 ~~~
 
-The inferences are in the `inf` field. The inference here, `('isa', e1, 'river')` says: "e1 is a river". When this sentence is composed by the Composer, it stores this fact in the dialog context. From that point it is available by all modules like any other tuple in a database.
+The inferences are in the `inf` field. The inference here, `('dialog_isa', e1, 'river')` says: "e1 is a river". When this sentence is composed by the Composer, it stores this fact in the dialog context. From that point it is available by all modules like any other tuple in a database.
 
 Why would you create both a `sem` and an `inf` for the same information, that E1 is a river? The `sem` is used to filter out the `E1`s that are not a river. The `inf` is used to provide information to predicates elsewhere in the sentence, or even in sentences further up in the dialog. For example, here is the predicate `has_population`:
 

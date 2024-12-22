@@ -112,6 +112,21 @@ If a space is optional but not required, use the tilde delimeter: `~`:
 
 This says: the sentence ends with a question mark, possibly preceded by space.
 
+## Morphological analysis
+
+The following rules ignore the plural suffix "s". The first rule is the common rule. The second one is for words that end with "ies": cities -> city.
+
+~~~python
+{
+    "syn": "noun(E1) -> noun(E1) + 's'",
+    "sem": lambda noun: noun
+},
+{
+    "syn": "noun(E1) -> /\w+/ + 'ies'",
+    "sem": lambda token: [(token+'y', E1)], "inf": lambda token: [('dialog_isa', e1, token+'y')]
+}
+~~~
+
 ## Parse tree ordering
 
 A bigger grammar will produce more parse trees. The most important factor for __ambiguity__ is the use of the __token__ category in a rewrite rule, since it matches any word.
