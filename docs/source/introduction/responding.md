@@ -14,7 +14,7 @@ The responder reads the inferences made for the sentence to determine how to tra
 }
 ~~~
 
-The format inferred from processing this sentence is `("format", "y/n")`. I.e. this is a Yes/no question. The response should be "yes" or "no". The responder checks the list of bindings. If empty, it returns "no", otherwise "yes".
+The format inferred from processing this sentence is `("format", "y/n")`. I.e. this is a Yes/no question. The response should be "yes" or "no". The responder checks the list of bindings. If empty, it returns "no", otherwise "yes". To change these responses add atoms with `format_no` and `format_yes`, like this: `("format_no", "Insufficient information")`.
 
 ## List
 
@@ -51,6 +51,21 @@ The format is `("format", "number")` and `("format_number", e2, "ksqmiles")` is 
 ~~~
 
 The format is `("format", "table")` and `("format_table", [e3, e1], [None, 'ksqmiles'])` is its extension. The output here is not a string, but a list of lists (a table). The first row consists of the header: the second argument `[None, 'ksqmiles']`. For each of the bindings a row is created with the values of `e3` and `e1` in that order.
+
+## Switch
+
+A sentence with multiple interpretations can be implemented by giving each interpretation its own inference rule. The example below provides 3 instances of the rule `two_way_instance_of`. The format is a switch based on these interpretations. The switch has a variable that will contain the selected interpretation, as a value. In the example below: `e3`. Each value can have it's own response text. If none of the selected values was found, a default text is output. In the example: "Insufficient information".
+
+~~~python
+{
+    "syn": "s() -> 'is' a() common_noun_name(E1) a() common_noun_name(E2)~'?'",
+    "sem": lambda a1, common_noun_name1, a2, common_noun_name2: [('two_way_instance_of', common_noun_name1, common_noun_name2, E3)],
+    "inf": [("format", "switch"), ("format_switch", e3, 'Insufficient information'),
+            ("format_switch_value", 'sometimes', 'Sometimes'),
+            ("format_switch_value", 'yes', 'Yes')
+        ],
+}
+~~~
 
 ## Canned
 
