@@ -12,6 +12,12 @@ SIR contains sentences like "Every boy is a person". These are added to the data
 
 The page [is-a relationships](../language/is-a.md) has more on the topic.
 
+## Teaching equality
+
+SIR contains sentences like "John is Jack". These are added to the database in the form `equals('John', 'Jack')`.
+
+The page [is (equals)](../language/is-equals.md) has more on the topic.
+
 ## Teaching concepts
 
 SIR teaches the structure of concepts Notice these sentences:

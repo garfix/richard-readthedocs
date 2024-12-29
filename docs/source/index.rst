@@ -42,6 +42,7 @@ This Python software library allows you to turn human language sentences into Py
    language/prepositional-phrases.md
    language/questions.md
    language/is-a.md
+   language/is-equality.md
 
 .. toctree::
    :caption: Demos
