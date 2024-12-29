@@ -68,7 +68,7 @@ Some phrases imply information about dialog variables that is useful to followin
 {
     "syn": "noun(E1) -> 'city'",
     "sem": lambda: [('city', E1)],
-    "inf": [('isa', e1, 'city')]
+    "dialog": [('isa', e1, 'city')]
 }
 ~~~
 
@@ -80,7 +80,7 @@ The value of `inf` may be a list of atoms, but it can also be a function that re
 {
     "syn": "common_noun(E1) -> /\w+/",
     "sem": lambda token: [(token, E1)],
-    "inf": lambda token: [('isa', e1, token)]
+    "dialog": lambda token: [('isa', e1, token)]
 }
 ~~~
 

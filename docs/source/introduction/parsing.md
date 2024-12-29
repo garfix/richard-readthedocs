@@ -123,7 +123,7 @@ The following rules ignore the plural suffix "s". The first rule is the common r
 },
 {
     "syn": "noun(E1) -> /\w+/ + 'ies'",
-    "sem": lambda token: [(token+'y', E1)], "inf": lambda token: [('dialog_isa', e1, token+'y')]
+    "sem": lambda token: [(token+'y', E1)], "dialog": lambda token: [('dialog_isa', e1, token+'y')]
 }
 ~~~
 
@@ -173,12 +173,12 @@ When you __just know__ that one interpretation of a sentence should be preferred
 {
     "syn": "s(E1) -> 'what' 'are' np(E1) '?'",
     "sem": lambda np: apply(np, []),
-    "inf": [("format", "list"), ("format_list", e1)],
+    "dialog": [("format", "list"), ("format_list", e1)],
 },
 {
     "syn": "s(E1, E2) -> 'what' 'are' 'the' noun(E1) 'of' np(E2) '?'",
     "sem": lambda noun, np: noun + [('of', E1, E2)] + apply(np, []),
-    "inf": [("format", "table"), ("format_table", [e2, e1], [None, None])],
+    "dialog": [("format", "table"), ("format_table", [e2, e1], [None, None])],
     "boost": 1
 }
 ~~~

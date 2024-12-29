@@ -120,7 +120,7 @@ To express the fact that one name refers to the same entity as another name, you
 
 ## Compound noun names
 
-This section is about compound nouns like "sodium chloride", used as proper nouns, when the class of the entity is to be inferred from the name. In the case of "sodium chloride", that it is a cloride. You can infer this by using an inference ("inf").
+This section is about compound nouns like "sodium chloride", used as proper nouns, when the class of the entity is to be inferred from the name. In the case of "sodium chloride", that it is a cloride. You can infer this by using an inference ("dialog").
 
 ~~~python
 # proper noun
@@ -131,7 +131,7 @@ This section is about compound nouns like "sodium chloride", used as proper noun
 { "syn": "proper_noun(E1) -> token(E1) main_noun(E1)", "sem": lambda token, main_noun: [('resolve_name', token + ' ' + main_noun, E1)] },
 
 # the major part a compound noun
-{ "syn": "main_noun(E1) -> 'oxide'", "sem": lambda: 'oxide', "inf": [("oxide", e1)] },
-{ "syn": "main_noun(E1) -> 'chloride'", "sem": lambda: 'chloride', "inf": [("chloride", e1)] },
-{ "syn": "main_noun(E1) -> 'sulfide'", "sem": lambda: 'sulfide', "inf": [("sulfide", e1)] },
+{ "syn": "main_noun(E1) -> 'oxide'", "sem": lambda: 'oxide', "dialog": [("oxide", e1)] },
+{ "syn": "main_noun(E1) -> 'chloride'", "sem": lambda: 'chloride', "dialog": [("chloride", e1)] },
+{ "syn": "main_noun(E1) -> 'sulfide'", "sem": lambda: 'sulfide', "dialog": [("sulfide", e1)] },
 ~~~

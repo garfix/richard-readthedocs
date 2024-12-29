@@ -10,7 +10,7 @@ Here's an example of an inference that is stored in the dialog context:
 {
     "syn": "noun(E1) -> 'river'",
     "sem": lambda: [('river', E1)],
-    "inf": [('dialog_isa', e1, 'river')]
+    "dialog": [('dialog_isa', e1, 'river')]
 }
 ~~~
 

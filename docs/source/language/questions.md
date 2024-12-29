@@ -14,7 +14,7 @@ They produce a range of entities. If the list contains any values, the answer wo
 {
     "syn": "s(E1) -> 'is' 'there' np(E1) '?'",
     "sem": lambda np: apply(np, []),
-    "inf": [("format", "y/n")],
+    "dialog": [("format", "y/n")],
 }
 ~~~
 
@@ -28,7 +28,7 @@ List question produce one or more answers, based on a single variable, that can 
 {
     "syn": "s(E1) -> 'what' nbar(E1) 'are' 'there' '?'",
     "sem": lambda nbar: nbar,
-    "inf": [("format", "list"), ("format_list", e1)],
+    "dialog": [("format", "list"), ("format_list", e1)],
 }
 ~~~
 
@@ -40,7 +40,7 @@ Here's a quite different sentence, that still behaves just like a list:
 {
     "syn": "s(E2) -> 'where' 'is' np(E1) '?'",
     "sem": lambda np: apply(np, []) + [('where', E1, E2)],
-    "inf": [("format", "list"), ("format_list", e2)],
+    "dialog": [("format", "list"), ("format_list", e2)],
 }
 ~~~
 
@@ -56,7 +56,7 @@ The `sem` of a rule that results in a number is often an aggregation, like `sum`
 {
     "syn": "s(E1) -> 'what' 'is' 'the' 'total' 'area' 'of' np(E2) '?'",
     "sem": lambda np: [("sum", E1, E3, apply(np, []) + [('size_of', E2, E3)])],
-    "inf": [("format", "number"), ("format_number", e1, "ksqmiles")],
+    "dialog": [("format", "number"), ("format_number", e1, "ksqmiles")],
 }
 ~~~
 
@@ -70,7 +70,7 @@ Some questions require multiple values per answer, and are normally displayed as
 {
     "syn": "s(E1, E3) -> 'what' 'is' 'the' 'average' 'area' 'of' np(E2) preposition(E2, E3) 'each' nbar(E3) '?'",
     "sem": lambda np, preposition, nbar: nbar + [('avg', E1, E4, apply(np, preposition) + [('size_of', E2, E4)])],
-    "inf": [("format", "table"), ("format_table", [e3, e1], [None, 'ksqmiles'])],
+    "dialog": [("format", "table"), ("format_table", [e3, e1], [None, 'ksqmiles'])],
 }
 ~~~
 

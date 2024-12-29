@@ -41,7 +41,7 @@ While is-a for classes can be implemented as a rule (`mammal(E1) :- dog(E1).`), 
 {
     "syn": "s() -> a() common_noun(E1) 'is' a() common_noun(E2)",
     "sem": lambda common_noun1, a2, common_noun2: [('store', [('isa', common_noun2[0], common_noun1)])],
-    "inf": [("format", "canned"), ("format_canned", "I understand")],
+    "dialog": [("format", "canned"), ("format_canned", "I understand")],
 },
 ~~~
 
@@ -64,7 +64,7 @@ Similarly, is-a for instances can be implemented as a tuple (`dog('fido')`), but
 {
     "syn": "s() -> proper_noun(E1) 'is' a() common_noun(E2)",
     "sem": lambda proper_noun, a, common_noun: [('store', [('isa', proper_noun[0], common_noun)])],
-    "inf": [("format", "canned"), ("format_canned", "I understand")],
+    "dialog": [("format", "canned"), ("format_canned", "I understand")],
 },
 ~~~
 

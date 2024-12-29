@@ -10,7 +10,7 @@ The responder reads the inferences made for the sentence to determine how to tra
 {
     "syn": "s(E1) -> 'is' 'there' np(E1) '?'",
     "sem": lambda np: apply(np, []),
-    "inf": [("format", "y/n")],
+    "dialog": [("format", "y/n")],
 }
 ~~~
 
@@ -22,7 +22,7 @@ The format inferred from processing this sentence is `("format", "y/n")`. I.e. t
 {
     "syn": "s(E1) -> 'what' nbar(E1) 'are' 'there' '?'",
     "sem": lambda nbar: nbar,
-    "inf": [("format", "list"), ("format_list", e1)],
+    "dialog": [("format", "list"), ("format_list", e1)],
 }
 ~~~
 
@@ -34,7 +34,7 @@ The format is `("format", "list")` and `("format_list", e1)` is a extension of i
 {
     "syn": "s(E2) -> 'how' 'large' 'is' np(E1) '?'",
     "sem": lambda np: apply(np, []) + [('size_of', E1, E2)],
-    "inf": [("format", "number"), ("format_number", e2, "ksqmiles")],
+    "dialog": [("format", "number"), ("format_number", e2, "ksqmiles")],
 }
 ~~~
 
@@ -46,7 +46,7 @@ The format is `("format", "number")` and `("format_number", e2, "ksqmiles")` is 
 {
     "syn": "s(E1, E3) -> 'what' 'is' 'the' 'average' 'area' 'of' np(E2) preposition(E2, E3) 'each' nbar(E3) '?'",
     "sem": lambda np, preposition, nbar: nbar + [('avg', E1, E4, apply(np, preposition) + [('size_of', E2, E4)])],
-    "inf": [("format", "table"), ("format_table", [e3, e1], [None, 'ksqmiles'])],
+    "dialog": [("format", "table"), ("format_table", [e3, e1], [None, 'ksqmiles'])],
 }
 ~~~
 
@@ -60,7 +60,7 @@ A sentence with multiple interpretations can be implemented by giving each inter
 {
     "syn": "s() -> 'is' a() common_noun_name(E1) a() common_noun_name(E2)~'?'",
     "sem": lambda a1, common_noun_name1, a2, common_noun_name2: [('two_way_instance_of', common_noun_name1, common_noun_name2, E3)],
-    "inf": [("format", "switch"), ("format_switch", e3, 'Insufficient information'),
+    "dialog": [("format", "switch"), ("format_switch", e3, 'Insufficient information'),
             ("format_switch_value", 'sometimes', 'Sometimes'),
             ("format_switch_value", 'yes', 'Yes')
         ],
@@ -73,7 +73,7 @@ A sentence with multiple interpretations can be implemented by giving each inter
 {
     "syn": "s(E1) -> 'bye' '.'",
     "sem": lambda: [],
-    "inf": [("format", "canned"), ("format_canned", "Cheerio.")],
+    "dialog": [("format", "canned"), ("format_canned", "Cheerio.")],
 },
 ~~~
 
@@ -85,7 +85,7 @@ The responses `list` and `number` can use `format_canned` as well. A placeholder
 {
     "syn": "s(E3) -> 'how' 'many' common_noun(E1) 'does' proper_noun(E2) 'have' '?'",
     "sem": lambda common_noun1, common_noun2: common_noun1 + common_noun2 + [('count', E3, [('have', E2, E1)])],
-    "inf": [("format", "number"), ("format_number", e3, ''), ('format_canned', 'The answer is {}')],
+    "dialog": [("format", "number"), ("format_number", e3, ''), ('format_canned', 'The answer is {}')],
 }
 ~~~
 
