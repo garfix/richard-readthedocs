@@ -112,6 +112,18 @@ If a space is optional but not required, use the tilde delimeter: `~`:
 
 This says: the sentence ends with a question mark, possibly preceded by space.
 
+## Optional tokens
+
+A token can be made optional by adding a "?" after it.
+
+~~~python
+{
+    "syn": "s(E1) -> np(E1) 'is' 'a'? 'part' 'of' np(E2)",
+}
+~~~
+
+This will match both "is a part of" and "is part of".
+
 ## Morphological analysis
 
 The following rules ignore the plural suffix "s". The first rule is the common rule. The second one is for words that end with "ies": cities -> city.

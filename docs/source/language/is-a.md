@@ -7,11 +7,17 @@ It may be a class, like this, where "dog" and "Brumby" are introduced:
     A dog is a mammal
     A Brumby is a horse
 
+This is the `instance of` relationship.
+
 or a single instance, like this, where "Fido", "Magnesium" and "Blue" are new:
 
     Fido is a dog
     Magnesium is a metal
     Blue is a color
+
+This is the `subset-of` relationship.
+
+Each concept, or thing, has an **instance aspect** and a **subset aspect**, that is, it can be used as an element of a set, or a subset of another set. An application may treat the instance and the set aspect as different entities, but also as the same entity.
 
 The examples below are part of the SIR demo.
 

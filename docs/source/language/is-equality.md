@@ -43,5 +43,5 @@ The advantage is that you leave it to the logic to determine what `equals` reall
     Salt is Natrium Chloride
     Clark Kent is Superman
 
-The first equality is pure synonymy, While the second one means something like: Clark Kent and Superman have the same location, and share (a large part of) the same mind and body. Note that one can't just say "Clark Kent flies over New Yrok wearing a red cape."
+The first equality is pure synonymy, While the second one means something like: Clark Kent and Superman have the same location, and share (a large part of) the same mind and body. Note that one can't just say "Clark Kent flies over Metropolis wearing a red cape."
 
