@@ -6,7 +6,6 @@ This example code will make the idea clear:
 
 ~~~python
 language_selector = LanguageSelector(["en_US", "nl_NL"])
-tokenizer = BasicTokenizer()
 
 parsers = {
     "nl_NL": BasicParser([
@@ -17,7 +16,7 @@ parsers = {
         { "syn": "proper_noun(E1) -> 'john'" },
         { "syn": "proper_noun(E1) -> 'mary'" },
         { "syn": "verb(V) -> 'loves'" },
-    ], tokenizer),
+    ]),
     "en_US": BasicParser([
         { "syn": "s(V) -> np(E1) vp(V, E1)" },
         { "syn": "vp(V, E1) -> verb(V) np(E1)" },
@@ -26,14 +25,13 @@ parsers = {
         { "syn": "proper_noun(E1) -> 'jan'" },
         { "syn": "proper_noun(E1) -> 'marie'" },
         { "syn": "verb(V) -> 'houdt' 'van'" },
-    ], tokenizer)
+    ])
 }
 
 parser = Multilingual(parsers, language_selector)
 
 pipeline = Pipeline([
     FindOne(language_selector),
-    FindOne(tokenizer),
     FindOne(parser)
 ])
 ~~~

@@ -18,7 +18,6 @@ In your project you build a processing pipeline. It consists of control blocks w
 
 ~~~python
 pipeline = Pipeline([
-    FindOne(tokenizer),
     FindOne(parser),
     TryFirst(composer),
     TryFirst(executor),

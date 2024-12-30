@@ -10,7 +10,7 @@ The pipeline in this library consists of __control blocks__, and each block cont
 
 ## Processor
 
-A __processor__ is an component that performs part of the sentence processing. Examples are the tokenizer and the parser. Each of these works on the products of earlier processors in the pipeline and creates one or more alternative products. This forms the __ambiguity__ of the sentence. Next to the products, a processor may also return an error code, that is useful for debugging.
+A __processor__ is an component that performs part of the sentence processing. An examples is the parser. Each of these works on the products of earlier processors in the pipeline and creates one or more alternative products. This forms the __ambiguity__ of the sentence. Next to the products, a processor may also return an error code, that is useful for debugging.
 
 A processor produces a __ProcessResult__ that can have an error, indicating that the process failed, or one or more __Products__.
 

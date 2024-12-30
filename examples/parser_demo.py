@@ -1,7 +1,6 @@
 from richard.core.Pipeline import Pipeline
 from richard.entity.SentenceRequest import SentenceRequest
 from richard.processor.parser.BasicParser import BasicParser
-from richard.processor.tokenizer.BasicTokenizer import BasicTokenizer
 from richard.block.FindOne import FindOne
 
 def parser_demo():
@@ -16,11 +15,9 @@ def parser_demo():
         { "syn": "verb(V) -> 'loves'" },
     ]
 
-    tokenizer = BasicTokenizer()
-    parser = BasicParser(grammar, tokenizer)
+    parser = BasicParser(grammar)
 
     pipeline = Pipeline([
-        FindOne(tokenizer),
         FindOne(parser)
     ])
 

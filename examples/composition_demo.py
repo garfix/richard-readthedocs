@@ -2,7 +2,6 @@ from richard.core.Pipeline import Pipeline
 from richard.entity.SentenceRequest import SentenceRequest
 from richard.processor.parser.BasicParser import BasicParser
 from richard.processor.semantic_composer.SemanticComposer import SemanticComposer
-from richard.processor.tokenizer.BasicTokenizer import BasicTokenizer
 from richard.block.FindOne import FindOne
 from richard.core.constants import E1, E2, Body, Range
 from richard.processor.parser.helper.grammar_functions import apply
@@ -20,12 +19,10 @@ def composition_demo():
         { "syn": "noun(E1) -> 'sea'", "sem": lambda: [('sea', E1)] },
     ]
 
-    tokenizer = BasicTokenizer()
-    parser = BasicParser(grammar, tokenizer)
+    parser = BasicParser(grammar)
     composer = SemanticComposer(parser)
 
     pipeline = Pipeline([
-        FindOne(tokenizer),
         FindOne(parser),
         FindOne(composer),
     ])
