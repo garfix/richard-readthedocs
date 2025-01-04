@@ -32,3 +32,7 @@ The first sentence just describes the relationship between finger and hand. The 
 SIR tells the user what knowledge is missing to make the proper inference. It can respond with "Don't know whether finger is part of John" and "How many finger per hand?". This is implemented in the predicates `have` and `part_of_n`. If they don't yield any results, the raise the exception that forms the response.
 
 The implementation of this feature is very brittle. Simple changes to the inferences can break it.
+
+## Checking declarative statements
+
+When the user makes a statement "The pad is to the left of the telephone", this information is not added to the database right away. It is first checked for consistency with the existing information. If the pad is already found to be to the right of the telephone, the system will respond "The above statement is impossible".

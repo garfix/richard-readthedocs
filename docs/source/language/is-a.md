@@ -76,6 +76,8 @@ The same sentence ("Is X an Y?") might have both interpretations. Sentences with
 }
 ~~~
 
+If a van-dyke (a kind of beard) is part of Ferren (a person), is a beard then part of Ferren as well? Yes: if a subset is part of a person, then the superset is part of him as well.
+
 ## Further considerations
 
 Some thoughts that might occur when dealing with the introduction of new concepts in a dialog:
