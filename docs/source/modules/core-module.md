@@ -94,3 +94,29 @@ It is used internally by the query optimizer, and can be used by the programmer 
 
 Binds `body-atoms` to the active variable values, and passes the atoms, one by one, to the solver, to be stored by an acceptepting module. This is a module that has a `write_function` for the predicate.
 
+## ('destructure', <atom>, <predicate>, <arg-val>, <arg-val>...)
+
+Matches the predicate of `Atom` to `predicate` and if it matches, if assigns the values of `Atoms` to the respective variables
+
+For example:
+
+    ('destructure', Atom, 'just_left_of', A, B)
+
+If the predicate of `Atom` is "just_left_of", A and B will be assigned the first and second argument of `Atom`.
+
+## ('findall', variable-name, body-atoms, result-variable)
+
+Executes `body-atoms` and goes through the results, collecting the values of `variable-name`. The list of these values are stored in `result-variable`.
+
+## ('find_all', [variable-name, variable-name...], body-atoms, result-variable)
+
+Executes `body-atoms` and goes through the results, collecting the combination of values of `variable-name, ...` into rows. The list of these rows (lists) are stored in `result-variable`.
+
+## ('find_one', variable-name, body-atoms, result-variable)
+
+Executes `body-atoms` and collects the first (presumed only) value of `variable-name`. This value is stored in `result-variable`.
+
+## ('fine_one', [variable-name, variable-name...], body-atoms, result-variable)
+
+Executes `body-atoms` and goes collecting the first (presumed only) values of `variable-name, ...` into a row. This row is stored in `result-variable`.
+

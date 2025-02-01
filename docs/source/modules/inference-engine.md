@@ -60,3 +60,29 @@ Here `np[0]` holds the tuple that is the head of the rule, while `noun` holds th
 Before storing the new rule, the head and body are bound to the activate variable values.
 
 _Cooper's system_ has some examples.
+
+## Grouping
+
+Atoms may be grouped using parenthesis, like this: `( part_of(A, B), part_of_n(A, B, N) )` this allows a group of atoms to be used as a single argument.
+
+## Disjunction
+
+When multiple rules match an atom, they will all be executed. Sometimes this is not what you want. If you want the second and third rules to be only executed when the first fails, you may use Prolog disjunction operator.
+
+
+An example can be found in the SIR demo. When asked "How many fingers has Tom?" SIR could find both "10" and "9" as the answer. However, it first tries to determine to look up the answer, and only if that fails, it tries to find the answer by reasoning.
+
+~~~pl
+part_of_number(A, B, N) :- (
+    # direct, non inheriting
+    part_of(A, B), part_of_n(A, B, N)
+;   # direct, inheriting
+    full_isa(AA, A), full_isa(B, BB), part_of(AA, BB), part_of_n(AA, BB, N)
+;   # transitive, non inheriting
+    part_of(C, B), part_of(A, C), part_of_n(C, B, N1), part_of_number(A, C, N2), multiply(N1, N2, N)
+;   # transitive, inheriting
+    full_isa(B, BB), part_of(C, BB), part_of(A, C), part_of_n(C, BB, N1), part_of_number(A, C, N2), multiply(N1, N2, N)
+).
+~~~
+
+The Prolog `;` separates the possible solutions. The second disjunct is only executed when the first fails, the third only when the second fails, and so on.

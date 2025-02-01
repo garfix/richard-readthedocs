@@ -36,3 +36,29 @@ The implementation of this feature is very brittle. Simple changes to the infere
 ## Checking declarative statements
 
 When the user makes a statement "The pad is to the left of the telephone", this information is not added to the database right away. It is first checked for consistency with the existing information. If the pad is already found to be to the right of the telephone, the system will respond "The above statement is impossible".
+
+## Exceptions to the rule
+
+SIR is told how many a fingers a person has in general, and also how many fingers Tom has:
+
+* There are two hands on each person. Every hand has 5 fingers.
+* Tom has 9 fingers
+
+When asked "How many fingers has Tom?" SIR could find both "10" and "9" as the answer. However, it first tries to determine to look up the answer, and only if that fails, it tries to find the answer by reasoning.
+
+The disjunctive operator in Prolog can be used for this kind of reasoning:
+
+~~~pl
+part_of_number(A, B, N) :- (
+    # direct, non inheriting
+    part_of(A, B), part_of_n(A, B, N)
+;   # direct, inheriting
+    full_isa(AA, A), full_isa(B, BB), part_of(AA, BB), part_of_n(AA, BB, N)
+;   # transitive, non inheriting
+    part_of(C, B), part_of(A, C), part_of_n(C, B, N1), part_of_number(A, C, N2), multiply(N1, N2, N)
+;   # transitive, inheriting
+    full_isa(B, BB), part_of(C, BB), part_of(A, C), part_of_n(C, BB, N1), part_of_number(A, C, N2), multiply(N1, N2, N)
+).
+~~~
+
+The Prolog `;` separates the possible solutions. The second disjunct is only executed when the first fails, and so on.
