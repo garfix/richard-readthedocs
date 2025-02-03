@@ -12,27 +12,7 @@ You're probably interested to see some demos of the system. See [the introductio
 
 ## Start your own project
 
-After that, pick a demo that looks like the system you intend to design. Copy it and adapt it to suit your needs.
-
-In your project you build a processing pipeline. It consists of control blocks with processors, like this:
-
-~~~python
-pipeline = Pipeline([
-    FindOne(parser),
-    TryFirst(composer),
-    TryFirst(executor),
-    TryFirst(responder)
-])
-~~~
-
-When you have a pipeline, it can process a sentence that is entered by the user, like this:
-
-~~~python
-question = "How many children has Madonna?"
-result = pipeline.enter(SentenceRequest(question))
-~~~
-
-The result you get is the product of the last processor in the pipeline. This result can be used by you to show it to the user.
+To start your own project, you can copy the "integration test" `hello_world`, and change it into the system you want.
 
 ## Grow your project by extending a dialog
 
@@ -59,7 +39,7 @@ The `logger` class has several options. Turn them all on at first. When you're c
 Test your code in the command line, like this:
 
 ~~~bash
-python3 -m unittest tests/integration/Chat80_test.py
+python3 -m unittest tests/integration/hello_world/test.py
 ~~~
 
 If you're using Bash, the intermediate results show up with colored headings.

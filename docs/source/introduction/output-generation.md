@@ -1,0 +1,32 @@
+# Output generation
+
+When the system needs to produce output, this output is not sent directly to the client. It is not printed to the screen. It is not even sent to a callback function to be processed in any other way. Rather, it is stored as a data structure in the sentence context.
+
+The write grammar handles this output type like this:
+
+~~~python
+{
+    "syn": "s() -> format(E1)",
+    "if": [('output_type', 'list'), ('output_list', E1)],
+    "format": lambda elements: format_list(elements),
+}
+
+def format_list(elements):
+    elements.sort()
+    return ", ".join(elements)
+
+~~~
+
+The output generator looks for the `s` node, and checks if the `if` clause of the rule matches. Here is matches the output type `list` and binds the variable `E1` to the element list. `s` then rewrites to `format`, which means that the `format` function of the rule is called, passing the list. This calls the function `format_list` which sorts the elements and concatenates them using a comma. This forms the actual output.
+
+## Output types
+
+The following output types are available from the BasicSentenceContext:
+
+* `output_value(value)`
+* `output_value_with_unit(value, unit)`
+* `output_table(results, units)`
+* `output_list(elements)`
+
+
+Examples of all types can be found in the CHAT-80 demo.
