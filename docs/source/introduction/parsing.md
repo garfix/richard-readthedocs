@@ -11,7 +11,7 @@ A __parse tree__ is a tree-representation of a sentence. This __syntactic__ repr
 To see this in action, copy this sample script and run it.
 
 ~~~python
-from richard.core.Pipeline import Pipeline
+from richard.core.System import System
 from richard.entity.SentenceRequest import SentenceRequest
 from richard.processor.parser.BasicParser import BasicParser
 from richard.block.FindOne import FindOne
@@ -30,12 +30,16 @@ def parser_demo():
 
     parser = BasicParser(grammar)
 
-    pipeline = Pipeline([
-        FindOne(parser)
-    ])
+    system = System(
+        model=model,
+        input_pipeline=[
+            FindOne(parser)
+        ],
+        output_generator=generator
+    )
 
     request = SentenceRequest("John loves Mary")
-    parse_tree = pipeline.enter(request)
+    parse_tree = system.enter(request)
     print(parse_tree)
 
 

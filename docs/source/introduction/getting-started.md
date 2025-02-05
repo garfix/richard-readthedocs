@@ -4,7 +4,7 @@ Welcome to Richard!, a Python library that translates human language into Python
 
 Richard! adheres to the principle of progressive disclosure of complexity: simple systems can be built using little code, complex systems can be built as well, but require a lot more code.
 
-The system is still very much in development, so don't expect it to work flawlessly, and the code you develop will probably not work with the next release of the library. But you will be able to experiment with natural language understanding.
+The system is still very much in development, so don't expect it to work flawlessly, and the code you develop will probably not work with the next release of the library. Also, the documentation is not up-to-date. But you will be able to experiment with natural language understanding.
 
 ## Demos
 

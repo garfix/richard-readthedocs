@@ -30,10 +30,14 @@ parsers = {
 
 parser = Multilingual(parsers, language_selector)
 
-pipeline = Pipeline([
-    FindOne(language_selector),
-    FindOne(parser)
-])
+system = System(
+    model=model,
+    input_pipeline=[
+        FindOne(language_selector),
+        FindOne(parser)
+    ],
+    output_generator=generator
+)
 ~~~
 
 The first block in the pipeline contains a `language selector`. The language selector produces two or more locales. After the first locale is selected, the rest of the pipeline is attempted. If this fails because the sentence can't be parsed in one language, the pipeline backtracks and tries the next locale.

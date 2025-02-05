@@ -7,6 +7,7 @@ This Python software library allows you to turn human language sentences into Py
    :caption: Introduction
 
    introduction/getting-started.md
+   introduction/system.md
    introduction/parsing.md
    introduction/entity-unification-grammar.md
    introduction/composition.md
@@ -25,7 +26,7 @@ This Python software library allows you to turn human language sentences into Py
 
    modules/core-module.md
    modules/dialog-context.md
-   modules/sentence-context.md
+   modules/output-buffer.md
    modules/inference-engine.md
    modules/grammar-module.md
    modules/custom-modules.md

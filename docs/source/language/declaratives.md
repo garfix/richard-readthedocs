@@ -22,18 +22,14 @@ Notice that the sem of the sentence doesn't just `store` the preposition, it say
 ~~~python
 {
     "syn": "s(E3) -> proper_noun(E1) 'is' preposition(E1, E2) proper_noun(E2)",
-    "sem": lambda proper_noun1, preposition, proper_noun2: proper_noun1 + proper_noun2 + [('sentence_claim', preposition, E3)],
-    "dialog": [("format", "switch"), ("format_switch", e3, 'Insufficient information'),
-            ("format_switch_value", 'impossible', 'The above statement is impossible'),
-            ("format_switch_value", 'ok', 'I understand')
-        ],
+    "sem": lambda proper_noun1, preposition, proper_noun2: proper_noun1 + proper_noun2 + [('intent_claim', preposition, E3)],
 }
 ~~~
 
 Only after checking the validity of the information is it actually stored.
 
-~~~prolog
-sentence_claim(Atom, "impossible") :- not(check_claim(Atom)).
-sentence_claim(Atom, "ok") :- check_claim(Atom), store(Atom).
+~~~pl
+intent_claim(Atom, "impossible") :- not(check_claim(Atom)).
+intent_claim(Atom, "ok") :- check_claim(Atom), store(Atom).
 ~~~
 

@@ -62,3 +62,24 @@ part_of_number(A, B, N) :- (
 ~~~
 
 The Prolog `;` separates the possible solutions. The second disjunct is only executed when the first fails, and so on.
+
+## Using context
+
+In SIR the predicate `left_of` should just mean the simple look-up of the fact when creating output, but it should be transitive in the case of a question.
+
+The context module has a means of starting a context in the dialog. This for example how to start a context called "question":
+
+~~~python
+[('with_context', 'question', [('intent_yn', proper_noun1 + proper_noun2 + preposition)])]
+~~~
+
+This context can be used by inference rules:
+
+~~~pl
+# in the context of a question, left_of is transitive
+left_of(A, B) :- context('question'), just_left_of(A, B).
+left_of(A, B) :- context('question'), just_left_of(A, C), left_of(C, B).
+left_of(A, B) :- context('question'), just_left_of(C, B), left_of(A, C).
+~~~
+
+Todo: the syntax of the context in the inference should be simpler
