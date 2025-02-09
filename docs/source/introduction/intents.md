@@ -1,6 +1,6 @@
 # Intents
 
-The core meaning of any sentence is its **intent**. An intent is the predicate that defines how the system deals witj the sentence.
+The core meaning of any sentence is its **intent**. An intent is the predicate that defines how the system deals with the sentence.
 
 While the meaning of a sentence is directly executable code, it's good to send this meaning to an `intent` handler to process it. This level of indirection provides you with the flexibility to format the output in any way you like, and to handle subtle differences in meaning in different ways.
 

@@ -1,6 +1,6 @@
 # SIR
 
-Replicates a dialog of SIR (Semantic Information Retriever), by Bertram Rafael as described in "SIR: a computer program for semantic information retrieval" - Bertram Rafael (1964)
+Replicates a dialog of SIR (Semantic Information Retriever), by Bertram Raphael as described in "SIR: a computer program for semantic information retrieval" - Bertram Raphael (1964)
 
 ## Learning concepts
 

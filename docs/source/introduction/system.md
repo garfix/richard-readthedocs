@@ -22,6 +22,12 @@ system = System(
 
 All parts can be configured and subclassed to your needs.
 
+## Data flow
+
+This diagram shows how the components in the system are connected.
+
+![System data flow](../images/system.drawio.png)
+
 ## Basic workflow
 
 This is how to enter a sentence and retrieve an answer
