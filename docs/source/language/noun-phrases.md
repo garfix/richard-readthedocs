@@ -26,7 +26,7 @@ An `nbar` (originally an n with a bar above it, or n') represents the unqualifie
 
 An `np` is a phrase that describes an entity, with an explicit or implicit determiner. Example are "every man", "the block", "at least 3 dogs", or just a name ("Afghanistan"). It is the most common phrase structure and it is always used in conjunction with a verb phrase.
 
-The meaning of the np is a __template__, which is a function (in the form of an object). This template is always used as the first parameter of an `apply` call, like this:
+The meaning of the np is a __function__, which is a function (in the form of an object). This function is always used as the first parameter of an `apply` call, like this:
 
 ~~~python
 {
@@ -35,23 +35,23 @@ The meaning of the np is a __template__, which is a function (in the form of an 
 }
 ~~~
 
-Here the meaning of `np` is the template, and it is applied to the `tv`, which means that the `tv` is passed as an argument to the template function to produce the new meaning.
+Here the meaning of `np` is the function, and it is applied to the `tv`, which means that the `tv` is passed as an argument to the function to produce the new meaning.
 
-There are a few noun phrases. Each produces a `SemanticTemplate` which takes a single argument: a verb phrase called `Body`. The result of the function uses the `Body` and its child semantics, for example `nbar`.
+There are a few noun phrases. Each produces a `SemanticFunction` which takes a single argument: a verb phrase called `Body`. The result of the function uses the `Body` and its child semantics, for example `nbar`.
 
 ~~~python
 {
     "syn": "np(E1) -> nbar(E1)", "sem": lambda nbar:
-            SemanticTemplate([Body], nbar + Body)
+            SemanticFunction([Body], nbar + Body)
 },
 {
     "syn": "np(E1) -> det(E1) nbar(E1)",
     "sem": lambda det, nbar:
-            SemanticTemplate([Body], apply(det, nbar, Body))
+            SemanticFunction([Body], apply(det, nbar, Body))
 }
 ~~~
 
-The reason for using an object (`SemanticTemplate`) where a Python function would have been preferable is purely technical. Variable unification requires the variables to be accessible, and they are not accessible from within a Python function.
+The reason for using an object (`SemanticFunction`) where a Python function would have been preferable is purely technical. Variable unification requires the variables to be accessible, and they are not accessible from within a Python function.
 
 The determiner `det` is explained in [Determiners](determiners.md)
 
@@ -83,8 +83,8 @@ Words like "largest" are superlatives. They produce the entity that scores highe
 },
 {
     "syn": "superlative(E1) -> 'largest'", "sem": lambda:
-            SemanticTemplate([Body], [('arg_max', E1, E2, Body + [('size_of', E1, E2)])])
+            SemanticFunction([Body], [('arg_max', E1, E2, Body + [('size_of', E1, E2)])])
 }
 ~~~
 
-Here `E1` in `superlative` will hold the entity with the largest value of `size_of`. This is made possible by treating `superlative` as a template that takes `nbar` as an argument.
+Here `E1` in `superlative` will hold the entity with the largest value of `size_of`. This is made possible by treating `superlative` as a function that takes `nbar` as an argument.

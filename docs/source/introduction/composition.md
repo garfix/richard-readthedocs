@@ -53,9 +53,9 @@ __fill__ fills in an argument of a tuple with the sem of a child. In this exampl
 }
 ~~~
 
-__apply__ is more complex. In some cases the structure of a sem is not determined by the node itself, but by one of the child nodes. This child node delivers a __template__ this then applied by the parent. The first argument of `apply` is thus a template (SemanticTemplate) which is applied to its furter arguments.
+__apply__ is a bit more complex. The sem of one child is a __function__ (a `SemanticFunction` object) which is then applied to the sems of other child nodes. The Python function `apply` performs this operation. The first argument of `apply` is thus a the SemanticFunction, the latter arguments are the sems of the other children.
 
-In the first rule of the following example `vp_nosub_obj` says: I will use my child `np` as a template to calculate my sem. I will pass it the child `tv` as an argument. Two further `np` rules are added as example of how the actual template depends on the inner structure of the `np`.
+In the first rule of the following example `vp_nosub_obj` says: I will use my child `np` as a function to calculate my sem. I will pass it the child `tv` as an argument. Two further `np` rules are added as example of how the actual function depends on the inner structure of the `np`.
 
 ~~~python
 {
@@ -64,17 +64,19 @@ In the first rule of the following example `vp_nosub_obj` says: I will use my ch
 },
 {
     "syn": "np(E1) -> nbar(E1)",
-    "sem": lambda nbar: SemanticTemplate([Body], nbar + Body)
+    "sem": lambda nbar: SemanticFunction([Body], nbar + Body)
 },
 {
     "syn": "np(E1) -> det(E1) nbar(E1)",
-    "sem": lambda det, nbar: SemanticTemplate([Body], apply(det, nbar, Body))
+    "sem": lambda det, nbar: SemanticFunction([Body], apply(det, nbar, Body))
 }
 ~~~
 
-A `SemanticTemplate` is like a function, but in the form of an object. It has two arguments: parameters and function body. Its first argument is a list of parameters. These parameters will be bound to the second (and further) arguments of the apply-call. SemanticTemplate's second argument is an expression that calculates the sem. It may use both the child sems (i.e. `nbar`) and the parameters of the SemanticTemplate (i.e. `Body`) to calculate the meaning.
+A `SemanticFunction` is like a function, but in the form of an object. It has two arguments: parameters and function body. Its first argument is a list of parameters. These parameters will be bound to the second (and further) arguments of the apply-call. SemanticFunction's second argument is an expression that calculates the sem. It may use both the child sems (i.e. `nbar`) and the parameters of the SemanticFunction (i.e. `Body`) to calculate the meaning.
 
-Apply is used a lot, because each np needs to be used as argument of apply. The number of SemanticTemplates, however is relatively large for a small grammar, but their use is rather limited to np's, determiners, and superlatives. In a large grammar their use will be relatively small.
+`SemanticFunctions` should be used sparingly. They are mainly used for `np`, `det`, and `superlative`: syntactic structures that need sibing structures to determine their full meaning.
+
+Apply is used a lot, because each np needs to be used as argument of apply. The number of SemanticFunctions, however is relatively large for a small grammar, but their use is rather limited to np's, determiners, and superlatives. In a large grammar their use will be relatively small.
 
 ## Example script
 
