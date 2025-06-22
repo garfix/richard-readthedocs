@@ -143,6 +143,10 @@ The following rules ignore the plural suffix "s". The first rule is the common r
 }
 ~~~
 
+## Parse tree pruning
+
+After all parse trees have been extracted, there are many meaningless trees that were formed by the regular expression rules that could be applied on about any word. To get rid of these meaningless parse trees, only the ones with **the least amount of regexp nodes** are kept.
+
 ## Parse tree ordering
 
 A bigger grammar will produce more parse trees. The most important factor for __ambiguity__ is the use of the __token__ category in a rewrite rule, since it matches any word.
