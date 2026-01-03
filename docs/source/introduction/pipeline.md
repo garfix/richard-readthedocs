@@ -22,6 +22,8 @@ A control block produces a __BlockResult__ which may contain an error. If it doe
 
 The control block implements __ambiguity resolution__. Ambiguity, the phenomenon that a sentence may have more than one possible meaning, appears at different levels of processing. It allows each processor to produce multiple alternative readings to the same input. Each of these alternatives will then be tried with the rest of the pipeline.
 
+If a processor yields multiple results, these need not be processed separately by the control block. Only if the results are different interpretations (ambiguous variants) it is useful to treat them as separate products. Otherwise the product just consists of an array of results.
+
 ## Sentence request
 
 Each new input sentence is placed in an object, a `SentenceRequest`, and passed through all processors. Each processor takes the products of one or more previous processors, which are stored in this request, and stores its own product in the request as well.

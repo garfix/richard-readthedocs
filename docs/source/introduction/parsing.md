@@ -143,6 +143,17 @@ The following rules ignore the plural suffix "s". The first rule is the common r
 }
 ~~~
 
+## Multiple parse trees
+
+Even if the input consists of multiple sentences, the default output of the parser is a single tree with `s` as the root category.
+It's possible to produce multiple parse trees; one for each sentence. In this case, specify the categories that form the root categories of these trees.
+
+~~~python
+parser = BasicParser(read_grammar, sentence_categories=["decl", "question"])
+~~~
+
+In this example, the topmost occurrences of the specified categories will serve as sentence roots.
+
 ## Parse tree pruning
 
 After all parse trees have been extracted, there are many meaningless trees that were formed by the regular expression rules that could be applied on about any word. To get rid of these meaningless parse trees, only the ones with **the least amount of regexp nodes** are kept.
