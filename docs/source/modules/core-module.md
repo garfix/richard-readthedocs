@@ -94,15 +94,15 @@ It is used internally by the query optimizer, and can be used by the programmer 
 
 Binds `body-atoms` to the active variable values, and passes the atoms, one by one, to the solver, to be stored by an acceptepting module. This is a module that has a `write_function` for the predicate.
 
-## ('destructure', <atom>, <predicate>, <arg-val>, <arg-val>...)
+## ('destructure', <bound-atoms>, <free-atoms>...)
 
-Matches the predicate of `Atom` to `predicate` and if it matches, if assigns the values of `Atoms` to the respective variables
+Performs destructuring, or unification 
 
 For example:
 
-    ('destructure', Atom, 'just_left_of', A, B)
+    ('destructure', Atoms, just_left_of(A, B))
 
-If the predicate of `Atom` is "just_left_of", A and B will be assigned the first and second argument of `Atom`.
+If the value of `Atoms` is, or contains, `just_left_of('pad', 'telephone')`, then A and B will be assigned `pad` and `telephone` respectively.
 
 ## ('findall', variable-name, body-atoms, result-variable)
 
