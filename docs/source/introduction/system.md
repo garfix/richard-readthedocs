@@ -3,20 +3,23 @@
 The system integrates all combines all the parts needed to process a sentence:
 
 * the model
+* the parser
+* the composer
+* the executor
 * the input pipeline
 * the output generator
+* the logger
 
 This is a common structure:
 
 ~~~python
-system = System(
+system = BasicSystem(
     model=model,
-    input_pipeline=[
-        TryFirst(parser),
-        TryFirst(composer),
-        TryFirst(executor),
-    ],
-    output_generator=generator
+    parser=parser,
+    composer=composer,
+    executor=executor,
+    output_generator=generator,
+    logger=logger
 )
 ~~~
 
@@ -37,3 +40,6 @@ system.enter(SentenceRequest("Hello world"))
 output = system.read_output()
 ~~~
 
+## Customization
+
+If you're not happy with the basic system, you can create your own. Make sure it extends `SomeSystem`.
