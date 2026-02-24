@@ -83,20 +83,3 @@ The value of `inf` may be a list of atoms, but it can also be a function that re
     "dialog": lambda token: [('isa', e1, token)]
 }
 ~~~
-
-## automaticly executed code
-
-In some cases you don't want information be stored, but code to be executed, immediately. In this case, use `exec`:
-
-~~~python
-{ "syn": "common_noun(E1) -> /\w+/",
-  "sem": lambda token: [ (token, E1) ],
-  "exec": lambda token: [
-        ('learn_grammar_rule', { "syn": f"common_noun(E1) -> '{token}'", "sem": lambda: [(token, E1)] }),
-        ('add_relation', token, ['id']),
-    ]
-}
-~~~
-
-In this example the `learn_grammar_rule` and `add_relation` atoms are executed by the semantic executor after the sentence is parsed and composed.
-
